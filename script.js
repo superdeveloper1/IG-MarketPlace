@@ -3694,6 +3694,13 @@ function submitAdminProduct(event) {
     saveSpecialColorStateToStorage();
 
     saveToStorage();
+    // Force immediate cloud write for admin product changes so refresh does not
+    // race the debounced sync timer.
+    if (isCloudSyncEnabled()) {
+        syncStateToCloud().catch(function (error) {
+            console.warn('Immediate cloud sync after product save failed:', error);
+        });
+    }
     buildSearchTerms();
     applyFilters();
     renderProducts();
