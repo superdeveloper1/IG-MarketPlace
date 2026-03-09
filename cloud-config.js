@@ -1,13 +1,12 @@
 window.IG_CLOUD_CONFIG = {
-    // Set to your deployed API Gateway base URL, for example:
-    // https://abc123.execute-api.us-east-1.amazonaws.com/prod
-    apiBaseUrl: '',
-    // Optional API key if your API Gateway stage requires one.
+    // Vercel serverless API base path for shared state.
+    apiBaseUrl: '/api',
+    // Optional API key if your backend requires one.
     apiKey: '',
-    // Keep false by default to prevent failed requests during local-only use.
-    enabled: false,
-    // Keep true so admin-added products persist in this browser after refresh.
-    allowLocalProductOverrides: true,
+    // Enabled to persist shared products/state for all visitors.
+    enabled: true,
+    // Use cloud global state as source of truth for catalog across users.
+    allowLocalProductOverrides: false,
     // Request timeout for cloud reads/writes in milliseconds.
     timeoutMs: 7000
 };
