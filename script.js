@@ -541,6 +541,9 @@ var products = [
     }
 ];
 
+products = (products || []).map(function (product) {
+    return normalizeProduct(product);
+});
 var catalogSeedProducts = JSON.parse(JSON.stringify(products));
 
 // Global State
@@ -4977,7 +4980,12 @@ function startProductCardImageRotation() {
 
 // Product Modal
 function openProductModal(id) {
-    currentProduct = products.find(function (p) { return p.id === id; });
+    var modalProductId = Number(id);
+    if (isFinite(modalProductId)) {
+        currentProduct = products.find(function (p) { return Number(p.id) === modalProductId; });
+    } else {
+        currentProduct = products.find(function (p) { return String(p.id) === String(id); });
+    }
     if (!currentProduct) return;
     hydrateProductSpecialColorStateFromDirect(currentProduct);
 
@@ -5326,7 +5334,7 @@ function openProductFromUrlIfPresent() {
     }
     var productId = Number(productParam);
 
-    var productExists = products.some(function (product) { return product.id === productId; });
+    var productExists = products.some(function (product) { return Number(product.id) === productId; });
     if (!productExists) {
         syncProductQueryParam(null);
         return;

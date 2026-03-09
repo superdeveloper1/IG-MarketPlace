@@ -6,8 +6,8 @@ window.IG_CLOUD_CONFIG = {
     apiKey: '',
     // Keep false by default to prevent failed requests during local-only use.
     enabled: false,
-    // Keep false so all visitors see the built-in catalog from script.js.
-    allowLocalProductOverrides: false,
+    // Keep true so admin-added products persist in this browser after refresh.
+    allowLocalProductOverrides: true,
     // Request timeout for cloud reads/writes in milliseconds.
     timeoutMs: 7000
 };
