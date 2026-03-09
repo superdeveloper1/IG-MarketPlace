@@ -1,31 +1,36 @@
 const CORS_ORIGIN = String(process.env.CORS_ORIGIN || "*");
 
-export function jsonResponse(statusCode, body) {
-  return new Response(JSON.stringify(body), {
-    status: Number(statusCode) || 500,
-    headers: {
-      "content-type": "application/json; charset=utf-8",
-      "access-control-allow-origin": CORS_ORIGIN,
-      "access-control-allow-headers":
-        "Content-Type,X-Api-Key,Authorization,X-Ig-User-Id",
-      "access-control-allow-methods": "GET,PUT,POST,OPTIONS",
-    },
-  });
+export function applyCorsHeaders(res) {
+  res.setHeader("Access-Control-Allow-Origin", CORS_ORIGIN);
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Content-Type,X-Api-Key,Authorization,X-Ig-User-Id"
+  );
+  res.setHeader("Access-Control-Allow-Methods", "GET,PUT,POST,OPTIONS");
 }
 
-export function optionsResponse() {
-  return jsonResponse(200, { ok: true });
+export function sendJson(res, statusCode, body) {
+  applyCorsHeaders(res);
+  res.status(Number(statusCode) || 500).json(body || {});
 }
 
-export async function readJsonBody(request) {
-  if (!request) return null;
-  const text = await request.text();
-  if (!text) return null;
-  try {
-    return JSON.parse(text);
-  } catch (error) {
-    return null;
+export function handleOptions(req, res) {
+  if (String(req.method || "").toUpperCase() !== "OPTIONS") return false;
+  sendJson(res, 200, { ok: true });
+  return true;
+}
+
+export function readJsonBody(req) {
+  if (!req) return null;
+  if (req.body && typeof req.body === "object") return req.body;
+  if (typeof req.body === "string") {
+    try {
+      return JSON.parse(req.body);
+    } catch (error) {
+      return null;
+    }
   }
+  return null;
 }
 
 export function sanitizeUserId(value) {
@@ -38,13 +43,12 @@ export function sanitizeUserId(value) {
   return normalized || "anon:guest";
 }
 
-export function readUserIdFromRequest(request) {
-  const url = new URL(request.url);
+export function readUserIdFromRequest(req) {
+  const url = new URL(req.url || "/", "http://localhost");
   const query = url.searchParams;
   const headerUserId =
-    request.headers.get("x-ig-user-id") ||
-    request.headers.get("X-Ig-User-Id") ||
-    request.headers.get("X-IG-USER-ID");
+    (req.headers && (req.headers["x-ig-user-id"] || req.headers["X-Ig-User-Id"] || req.headers["X-IG-USER-ID"])) ||
+    "";
   const queryUserId =
     query.get("userId") || query.get("userid") || query.get("user_id");
   return sanitizeUserId(headerUserId || queryUserId || "anon:guest");

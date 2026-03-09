@@ -1,61 +1,61 @@
 import { loadStateByKey, saveStateByKey } from "../_upstash-store.mjs";
 import {
-  jsonResponse,
-  optionsResponse,
+  handleOptions,
   readJsonBody,
   sanitizeGlobalState,
+  sendJson,
 } from "../_state-utils.mjs";
 
 const GLOBAL_STATE_PARTITION_KEY = String(
   process.env.GLOBAL_STATE_PARTITION_KEY || "state#global"
 );
 
-export async function OPTIONS() {
-  return optionsResponse();
-}
+export default async function handler(req, res) {
+  if (handleOptions(req, res)) return;
+  const method = String(req.method || "GET").toUpperCase();
 
-export async function GET() {
-  try {
-    const item = await loadStateByKey(GLOBAL_STATE_PARTITION_KEY);
-    return jsonResponse(200, {
-      scope: "global",
-      data: item && item.data ? item.data : null,
-      updatedAt: item && item.updatedAt ? item.updatedAt : null,
-    });
-  } catch (error) {
-    console.error("Failed to read global state:", error);
-    return jsonResponse(500, { message: "Failed to read global state" });
+  if (method === "GET") {
+    try {
+      const item = await loadStateByKey(GLOBAL_STATE_PARTITION_KEY);
+      sendJson(res, 200, {
+        scope: "global",
+        data: item && item.data ? item.data : null,
+        updatedAt: item && item.updatedAt ? item.updatedAt : null,
+      });
+      return;
+    } catch (error) {
+      console.error("Failed to read global state:", error);
+      sendJson(res, 500, { message: "Failed to read global state" });
+      return;
+    }
   }
-}
 
-async function upsertGlobal(request) {
-  const payload = await readJsonBody(request);
+  if (method !== "PUT" && method !== "POST") {
+    sendJson(res, 405, { message: "Method not allowed" });
+    return;
+  }
+
+  const payload = readJsonBody(req);
   if (!payload || typeof payload !== "object") {
-    return jsonResponse(400, { message: "Body must be valid JSON." });
+    sendJson(res, 400, { message: "Body must be valid JSON." });
+    return;
   }
 
   const normalized = sanitizeGlobalState(payload);
   if (!normalized) {
-    return jsonResponse(400, { message: "No valid global state fields in request." });
+    sendJson(res, 400, { message: "No valid global state fields in request." });
+    return;
   }
 
   try {
     const stored = await saveStateByKey(GLOBAL_STATE_PARTITION_KEY, normalized);
-    return jsonResponse(200, {
+    sendJson(res, 200, {
       ok: true,
       scope: "global",
       updatedAt: stored.updatedAt,
     });
   } catch (error) {
     console.error("Failed to save global state:", error);
-    return jsonResponse(500, { message: "Failed to save global state" });
+    sendJson(res, 500, { message: "Failed to save global state" });
   }
-}
-
-export async function PUT(request) {
-  return upsertGlobal(request);
-}
-
-export async function POST(request) {
-  return upsertGlobal(request);
 }

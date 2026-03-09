@@ -1,10 +1,10 @@
 import { loadStateByKey, saveStateByKey } from "../_upstash-store.mjs";
 import {
-  jsonResponse,
-  optionsResponse,
+  handleOptions,
   readJsonBody,
   readUserIdFromRequest,
   sanitizeUserState,
+  sendJson,
 } from "../_state-utils.mjs";
 
 const USER_STATE_PARTITION_PREFIX = String(
@@ -15,43 +15,49 @@ function stateKeyForUser(userId) {
   return USER_STATE_PARTITION_PREFIX + userId;
 }
 
-export async function OPTIONS() {
-  return optionsResponse();
-}
-
-export async function GET(request) {
-  const userId = readUserIdFromRequest(request);
+export default async function handler(req, res) {
+  if (handleOptions(req, res)) return;
+  const method = String(req.method || "GET").toUpperCase();
+  const userId = readUserIdFromRequest(req);
   const partitionKey = stateKeyForUser(userId);
-  try {
-    const item = await loadStateByKey(partitionKey);
-    return jsonResponse(200, {
-      scope: "user",
-      userId: userId,
-      data: item && item.data ? item.data : null,
-      updatedAt: item && item.updatedAt ? item.updatedAt : null,
-    });
-  } catch (error) {
-    console.error("Failed to read user state:", error);
-    return jsonResponse(500, { message: "Failed to read user state" });
-  }
-}
 
-async function upsertUser(request) {
-  const payload = await readJsonBody(request);
+  if (method === "GET") {
+    try {
+      const item = await loadStateByKey(partitionKey);
+      sendJson(res, 200, {
+        scope: "user",
+        userId: userId,
+        data: item && item.data ? item.data : null,
+        updatedAt: item && item.updatedAt ? item.updatedAt : null,
+      });
+      return;
+    } catch (error) {
+      console.error("Failed to read user state:", error);
+      sendJson(res, 500, { message: "Failed to read user state" });
+      return;
+    }
+  }
+
+  if (method !== "PUT" && method !== "POST") {
+    sendJson(res, 405, { message: "Method not allowed" });
+    return;
+  }
+
+  const payload = readJsonBody(req);
   if (!payload || typeof payload !== "object") {
-    return jsonResponse(400, { message: "Body must be valid JSON." });
+    sendJson(res, 400, { message: "Body must be valid JSON." });
+    return;
   }
 
   const normalized = sanitizeUserState(payload);
   if (!normalized) {
-    return jsonResponse(400, { message: "No valid user state fields in request." });
+    sendJson(res, 400, { message: "No valid user state fields in request." });
+    return;
   }
 
-  const userId = readUserIdFromRequest(request);
-  const partitionKey = stateKeyForUser(userId);
   try {
     const stored = await saveStateByKey(partitionKey, normalized);
-    return jsonResponse(200, {
+    sendJson(res, 200, {
       ok: true,
       scope: "user",
       userId: userId,
@@ -59,14 +65,6 @@ async function upsertUser(request) {
     });
   } catch (error) {
     console.error("Failed to save user state:", error);
-    return jsonResponse(500, { message: "Failed to save user state" });
+    sendJson(res, 500, { message: "Failed to save user state" });
   }
-}
-
-export async function PUT(request) {
-  return upsertUser(request);
-}
-
-export async function POST(request) {
-  return upsertUser(request);
 }
