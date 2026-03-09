@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IG - Electronics, Cars, Fashion & More</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2312254d'/%3E%3Ctext x='50%25' y='54%25' text-anchor='middle' font-size='30' font-family='Arial,sans-serif' font-weight='700' fill='white'%3EIG%3C/text%3E%3C/svg%3E">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Manrope:wght@500;600;700&display=swap" rel="stylesheet">
+    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+    <link rel="stylesheet" href="styles.css?v=20260223-2">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-top">
+            <div class="header-links">
+                <a href="#" id="authLink">Hi! <span id="userName">Sign in</span></a>
+                <a href="#" id="dailyDealsLink">Daily Deals</a>
+                <a href="#" id="helpContactLink">Help & Contact</a>
+            </div>
+            <div class="header-links">
+                <a href="#">Ship to: <strong>United States</strong></a>
+                <a href="#" id="sellLink">Sell</a>
+                <a href="#" id="wishlistLink">Watchlist</a>
+            </div>
+        </div>
+        <div class="header-main">
+            <a href="#" class="logo" aria-label="IG Home">
+                <span class="logo-mark" aria-hidden="true">
+                    <svg class="logo-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 0h10.5a.75.75 0 01.74.872l-1.2 7.2a.75.75 0 01-.74.628H7.2a.75.75 0 01-.74-.628l-1.2-7.2a.75.75 0 01.74-.872z"></path>
+                    </svg>
+                </span>
+                <span class="logo-wordmark">IG</span>
+            </a>
+            
+            <div class="search-bar">
+                <select class="search-select" id="searchCategory">
+                    <option value="all">All Categories</option>
+                </select>
+                <input type="text" class="search-input" id="searchInput" placeholder="Search for anything">
+                <button class="search-btn" id="searchBtn">Search</button>
+                <div class="search-suggestions" id="searchSuggestions" role="listbox" aria-label="Search suggestions"></div>
+            </div>
+
+            <div class="header-actions">
+                <button class="admin-open-btn" id="adminOpenBtn">Admin</button>
+                <div class="cart-icon" id="headerCartIcon">
+                    <span style="font-size: 24px;">&#128722;</span>
+                    <span class="cart-badge" id="cartBadge">0</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Categories Bar -->
+    <nav class="categories-bar">
+        <div class="categories-list" id="categoriesList"></div>
+    </nav>
+
+    <!-- Hero Carousel -->
+    <section class="hero-carousel" id="heroCarousel" aria-label="Featured promotions">
+        <div class="hero-slide active" style="background-image: url('https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=1800&h=900&fit=crop');" aria-hidden="false">
+            <div class="hero-slide-content">
+                <span class="hero-kicker">Runway Capsule 2026</span>
+                <h1>High Fashion, Cut in Black and Ivory</h1>
+                <p>Editorial silhouettes and statement accessories selected for a modern couture mood.</p>
+                <button class="hero-cta-btn">Shop The Capsule</button>
+            </div>
+        </div>
+        <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1445205170230-053b83016050?w=1800&h=900&fit=crop');" aria-hidden="true">
+            <div class="hero-slide-content">
+                <span class="hero-kicker">Atelier Select</span>
+                <h1>Tailored Essentials with Edge</h1>
+                <p>Sharp lines, clean textures, and premium layering pieces for elevated daily looks.</p>
+                <button class="hero-cta-btn">Explore The Edit</button>
+            </div>
+        </div>
+        <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=1800&h=900&fit=crop');" aria-hidden="true">
+            <div class="hero-slide-content">
+                <span class="hero-kicker">Night Collection</span>
+                <h1>After Dark: Bold by Design</h1>
+                <p>Monochrome statements, metallic accents, and limited drops made to own the room.</p>
+                <button class="hero-cta-btn">View Night Drop</button>
+            </div>
+        </div>
+        <button class="hero-nav-btn prev" type="button" data-step="-1" aria-label="Previous slide">&lt;</button>
+        <button class="hero-nav-btn next" type="button" data-step="1" aria-label="Next slide">&gt;</button>
+        <div class="hero-dots" id="heroDots" aria-label="Slide navigation"></div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="content-wrapper">
+        <!-- Filters Sidebar -->
+        <aside class="filters">
+            <h3 style="margin-bottom: 20px;">Filters</h3>
+            
+            <div class="filter-section">
+                <div class="filter-title">Price</div>
+                <div class="filter-option">
+                    <input type="checkbox" id="priceUnder50" value="0-50">
+                    <label for="priceUnder50">Under $50</label>
+                </div>
+                <div class="filter-option">
+                    <input type="checkbox" id="price50to100" value="50-100">
+                    <label for="price50to100">$50 - $100</label>
+                </div>
+                <div class="filter-option">
+                    <input type="checkbox" id="price100to200" value="100-200">
+                    <label for="price100to200">$100 - $200</label>
+                </div>
+                <div class="filter-option">
+                    <input type="checkbox" id="priceOver200" value="200-999999">
+                    <label for="priceOver200">Over $200</label>
+                </div>
+                <div class="price-inputs">
+                    <input type="number" placeholder="Min" id="minPrice">
+                    <input type="number" placeholder="Max" id="maxPrice">
+                </div>
+            </div>
+
+            <div class="filter-section">
+                <div class="filter-title">Condition</div>
+                <div class="filter-option">
+                    <input type="checkbox" id="conditionNew" value="new">
+                    <label for="conditionNew">New</label>
+                </div>
+                <div class="filter-option">
+                    <input type="checkbox" id="conditionUsed" value="used">
+                    <label for="conditionUsed">Used</label>
+                </div>
+                <div class="filter-option">
+                    <input type="checkbox" id="conditionRefurbished" value="refurbished">
+                    <label for="conditionRefurbished">Refurbished</label>
+                </div>
+            </div>
+
+            <div class="filter-section">
+                <div class="filter-title">Shipping</div>
+                <div class="filter-option">
+                    <input type="checkbox" id="freeShipping" value="free">
+                    <label for="freeShipping">Free Shipping</label>
+                </div>
+                <div class="filter-option">
+                    <input type="checkbox" id="fastShipping" value="fast">
+                    <label for="fastShipping">Fast & Free (2-3 days)</label>
+                </div>
+            </div>
+
+            <div class="filter-section">
+                <div class="filter-title">Brand</div>
+                <div class="filter-option">
+                    <input type="checkbox" id="brandOn" value="On">
+                    <label for="brandOn">On Running</label>
+                </div>
+                <div class="filter-option">
+                    <input type="checkbox" id="brandNike" value="Nike">
+                    <label for="brandNike">Nike</label>
+                </div>
+                <div class="filter-option">
+                    <input type="checkbox" id="brandAdidas" value="Adidas">
+                    <label for="brandAdidas">Adidas</label>
+                </div>
+            </div>
+
+            <button class="clear-filters" id="clearFiltersBtn">Clear All Filters</button>
+        </aside>
+
+        <!-- Products Section -->
+        <main class="products-section">
+            <div class="products-header">
+                <div class="results-count" id="resultsCount">Loading products...</div>
+                <div class="sort-bar">
+                    <label>Sort:</label>
+                    <select id="sortSelect">
+                        <option value="best">Best Match</option>
+                        <option value="price-low">Price: Low to High</option>
+                        <option value="price-high">Price: High to Low</option>
+                        <option value="newest">Newest</option>
+                        <option value="popular">Most Popular</option>
+                    </select>
+                    <div class="view-toggle">
+                        <button class="view-btn active" data-view="grid" title="Grid View">Grid</button>
+                        <button class="view-btn" data-view="list" title="List View">List</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="products-grid" id="productsContainer"></div>
+
+            <div class="pagination" id="pagination"></div>
+        </main>
+    </div>
+
+    <!-- Product Modal -->
+    <div id="productModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalProductName">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="breadcrumb">
+                    <a href="#" id="modalBreadcrumbHome">Home</a> &gt; 
+                    <a href="#" id="modalCategory">Category</a> &gt; 
+                    <span id="modalBreadcrumbName">Product</span>
+                </div>
+                <button class="close-btn" id="productModalCloseBtn">X</button>
+            </div>
+            <div class="modal-body">
+                <div class="image-gallery">
+                    <div class="thumbnails" id="thumbnails"></div>
+                    <div class="main-image-column">
+                    <div class="main-image-container">
+                        <button class="carousel-btn prev" type="button" data-modal-carousel-step="-1" aria-label="Previous image">&lt;</button>
+                        <img id="mainImage" class="main-image" src="" alt="">
+                        <button class="carousel-btn next" type="button" data-modal-carousel-step="1" aria-label="Next image">&gt;</button>
+                    </div>
+                    <div class="image-index-controls" id="modalImageIndexControls" aria-label="Select image"></div>
+                    </div>
+                </div>
+
+                <div class="product-details">
+                    <h1 class="product-title" id="modalProductName"></h1>
+                    
+                    <div class="product-meta">
+                        <div class="meta-item">
+                            <span class="stars" id="modalStars"></span>
+                            <span id="modalRatingCount"></span>
+                        </div>
+                        <div class="meta-item">
+                            <span id="modalSoldCount"></span>
+                        </div>
+                        <div class="meta-item">
+                            Item: <strong id="modalItemNumber"></strong>
+                        </div>
+                    </div>
+
+                    <div class="price-section">
+                        <div class="current-price" id="modalPrice"></div>
+                        <div class="price-info">
+                            <span class="product-original-price" id="modalOriginalPrice"></span>
+                            <span class="savings" id="modalSavings"></span>
+                        </div>
+                        <div style="margin-top: 12px; font-size: 14px;">
+                            <span style="color: #00a650;">Free shipping</span> | 
+                            <span style="color: #00a650;">30-day returns</span>
+                        </div>
+                    </div>
+
+                    <div id="modalVariants"></div>
+
+                    <div class="quantity-selector">
+                        <span class="quantity-label">Quantity:</span>
+                        <div class="quantity-controls">
+                            <button class="qty-btn" data-qty-delta="-1">-</button>
+                            <div class="qty-display" id="qtyDisplay">1</div>
+                            <button class="qty-btn" data-qty-delta="1">+</button>
+                        </div>
+                    </div>
+
+                    <div class="stock-info" id="stockInfo">In stock</div>
+
+                    <div class="action-buttons">
+                        <button class="buy-now-btn" id="modalBuyNowBtn">Buy It Now</button>
+                        <button class="add-to-cart-btn" id="modalAddToCartBtn">Add to cart</button>
+                    </div>
+
+                    <div class="secondary-actions">
+                        <button class="secondary-btn" id="modalWishlistBtn">
+                            <span id="wishlistBtnText">&#9825; Add to watchlist</span>
+                        </button>
+                        <button class="secondary-btn" type="button" id="modalShareBtn">
+                            Share
+                        </button>
+                    </div>
+
+                    <div class="product-description">
+                        <div class="description-title">About this item</div>
+                        <div class="description-text" id="modalDescription"></div>
+                        <ul class="features-list" id="modalFeatures"></ul>
+                    </div>
+
+                </div>
+
+                <div class="related-section">
+                    <div class="description-title">Related items</div>
+                    <div class="related-grid" id="relatedItems"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="video-modal" id="videoModal" role="dialog" aria-modal="true" aria-label="Product video">
+        <div class="video-modal-content">
+            <button class="close-btn" id="productVideoCloseBtn">X</button>
+            <iframe id="productVideoFrame" src="" title="Product video player" allowfullscreen></iframe>
+            <video id="productVideoPlayer" controls playsinline preload="metadata"></video>
+        </div>
+    </div>
+
+    <div class="video-modal" id="modelModal" role="dialog" aria-modal="true" aria-label="3D model viewer">
+        <div class="video-modal-content">
+            <button class="close-btn" id="productModelCloseBtn">X</button>
+            <iframe id="productModelFrame" src="" title="3D model viewer" allowfullscreen></iframe>
+            <model-viewer id="productModelViewer" camera-controls auto-rotate exposure="1" shadow-intensity="1" ar></model-viewer>
+        </div>
+    </div>
+
+    <div class="auth-overlay" id="authOverlay" role="dialog" aria-modal="true" aria-label="Account access">
+        <div class="auth-modal">
+            <button class="close-btn" type="button" id="authCloseBtn">X</button>
+            <h2>Account Access</h2>
+            <p id="authPrompt">Sign in or create an account to continue shopping.</p>
+
+            <div class="auth-tabs">
+                <button type="button" class="auth-tab active" id="authTabSignIn">Sign In</button>
+                <button type="button" class="auth-tab" id="authTabSignUp">Sign Up</button>
+            </div>
+
+            <form id="authSignInForm" class="auth-form">
+                <input id="authSignInEmail" type="email" placeholder="Email address" required>
+                <input id="authSignInPassword" type="password" placeholder="Password" required>
+                <label class="auth-keep-signed-in" for="authKeepSignedIn">
+                    <input id="authKeepSignedIn" type="checkbox">
+                    <span>Keep me signed in</span>
+                </label>
+                <button type="submit" class="auth-submit-btn">Sign In</button>
+            </form>
+
+            <form id="authSignUpForm" class="auth-form auth-hidden">
+                <input id="authSignUpName" type="text" placeholder="Full name" required>
+                <input id="authSignUpEmail" type="email" placeholder="Email address" required>
+                <input id="authSignUpPassword" type="password" placeholder="Password (min 6 chars)" minlength="6" required>
+                <input id="authSignUpConfirm" type="password" placeholder="Confirm password" minlength="6" required>
+                <button type="submit" class="auth-submit-btn">Create Account</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="auth-overlay" id="helpOverlay" role="dialog" aria-modal="true" aria-label="Help and contact">
+        <div class="auth-modal help-modal">
+            <button class="close-btn" type="button" id="helpCloseBtn">X</button>
+            <h2>Help & Contact</h2>
+            <p id="helpContextText">Tell us what you need and our support team will get back to you.</p>
+
+            <form class="auth-form help-form" id="helpContactForm">
+                <input id="helpName" type="text" placeholder="Your name" required>
+                <input id="helpEmail" type="email" placeholder="Email address" required>
+                <select id="helpTopic" required>
+                    <option value="">Select a topic</option>
+                    <option value="order">Order status</option>
+                    <option value="shipping">Shipping & delivery</option>
+                    <option value="returns">Returns & refunds</option>
+                    <option value="payments">Payments</option>
+                    <option value="report">Report an issue</option>
+                    <option value="help">General help</option>
+                </select>
+                <textarea id="helpMessage" rows="5" placeholder="How can we help?" required></textarea>
+                <button type="submit" class="auth-submit-btn">Send message</button>
+            </form>
+
+            <div class="help-quick-links">
+                <a href="mailto:support@ig-market.com">support@ig-market.com</a>
+                <a href="tel:+18005550199">+1 (800) 555-0199</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="auth-overlay" id="profileOverlay" role="dialog" aria-modal="true" aria-label="User profile">
+        <div class="auth-modal profile-modal">
+            <button class="close-btn" type="button" id="profileCloseTopBtn">X</button>
+            <h2>Your Profile</h2>
+            <p>Manage your account details and review your shopping activity.</p>
+
+            <div class="profile-email" id="profileEmail"></div>
+
+            <div class="profile-stat-grid">
+                <div class="profile-stat">
+                    <div class="profile-stat-value" id="profileOrderCount">0</div>
+                    <div class="profile-stat-label">Orders</div>
+                </div>
+                <div class="profile-stat">
+                    <div class="profile-stat-value" id="profileWatchlistCount">0</div>
+                    <div class="profile-stat-label">Watchlist</div>
+                </div>
+                <div class="profile-stat">
+                    <div class="profile-stat-value" id="profileCartCount">0</div>
+                    <div class="profile-stat-label">Cart Items</div>
+                </div>
+            </div>
+
+            <form class="auth-form" id="profileForm">
+                <input id="profileName" type="text" placeholder="Display name" required>
+                <button type="submit" class="auth-submit-btn">Save profile</button>
+            </form>
+
+            <div class="profile-actions">
+                <button type="button" class="secondary-btn" id="profileCloseBtn">Close</button>
+                <button type="button" class="secondary-btn profile-signout-btn" id="profileSignOutBtn">Sign out</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="auth-overlay" id="confirmOverlay" role="dialog" aria-modal="true" aria-label="Confirm action">
+        <div class="auth-modal confirm-modal">
+            <button class="close-btn" type="button" id="confirmCloseBtn">X</button>
+            <h2>Confirm Action</h2>
+            <p id="confirmMessage">Are you sure?</p>
+            <div class="confirm-actions">
+                <button type="button" class="secondary-btn" id="confirmCancelBtn">Cancel</button>
+                <button type="button" class="auth-submit-btn confirm-accept-btn" id="confirmAcceptBtn">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart Panel -->
+    <div class="cart-overlay" id="cartOverlay"></div>
+    <div class="cart-panel" id="cartPanel" role="dialog" aria-modal="true" aria-label="Shopping cart">
+        <div class="cart-header">
+            <h2>Shopping Cart (<span id="cartItemCount">0</span>)</h2>
+            <button class="close-btn" id="cartCloseBtn">X</button>
+        </div>
+        <div class="cart-body" id="cartBody">
+            <div class="cart-empty">
+                <div class="cart-empty-icon">&#128722;</div>
+                <h3>Your cart is empty</h3>
+                <p>Start shopping to add items</p>
+            </div>
+        </div>
+        <div class="cart-footer" id="cartFooter" style="display: none;">
+            <div class="cart-summary">
+                <div class="summary-row">
+                    <span>Subtotal:</span>
+                    <span id="cartSubtotal">$0.00</span>
+                </div>
+                <div class="summary-row">
+                    <span>Shipping:</span>
+                    <span id="cartShipping" style="color: #00a650;">FREE</span>
+                </div>
+                <div class="summary-row">
+                    <span>Tax:</span>
+                    <span id="cartTax">$0.00</span>
+                </div>
+                <div class="summary-row total">
+                    <span>Total:</span>
+                    <span id="cartTotal">$0.00</span>
+                </div>
+            </div>
+            <button class="checkout-btn" id="cartCheckoutBtn">Proceed to checkout</button>
+            <button class="continue-shopping" id="cartContinueBtn">Continue shopping</button>
+        </div>
+    </div>
+
+    <!-- Admin Panel -->
+    <div class="admin-overlay" id="adminOverlay"></div>
+    <aside class="admin-panel" id="adminPanel" role="dialog" aria-modal="true" aria-label="Admin panel">
+        <div class="admin-header">
+            <h2>Admin Panel</h2>
+            <div class="admin-header-actions">
+                <button class="admin-secondary-btn admin-compact-toggle-btn" id="adminCompactToggleBtn" type="button" aria-pressed="false">Compact Off</button>
+                <button class="close-btn" id="adminCloseBtn">X</button>
+            </div>
+        </div>
+
+        <div class="admin-tabs">
+            <button class="admin-tab active" data-tab="dashboard">Dashboard</button>
+            <button class="admin-tab" data-tab="products">Products</button>
+            <button class="admin-tab" data-tab="orders">Orders</button>
+        </div>
+
+        <div class="admin-content">
+            <section class="admin-tab-panel active" id="adminTab-dashboard">
+                <div class="admin-stats-grid">
+                    <div class="admin-stat-card">
+                        <div class="admin-stat-label">Products</div>
+                        <div class="admin-stat-value" id="adminStatProducts">0</div>
+                    </div>
+                    <div class="admin-stat-card">
+                        <div class="admin-stat-label">Orders</div>
+                        <div class="admin-stat-value" id="adminStatOrders">0</div>
+                    </div>
+                    <div class="admin-stat-card">
+                        <div class="admin-stat-label">Revenue</div>
+                        <div class="admin-stat-value" id="adminStatRevenue">$0.00</div>
+                    </div>
+                    <div class="admin-stat-card">
+                        <div class="admin-stat-label">Low Stock</div>
+                        <div class="admin-stat-value" id="adminStatLowStock">0</div>
+                    </div>
+                </div>
+
+                <div class="admin-card">
+                    <h3>Recent Orders</h3>
+                    <div id="adminRecentOrders"></div>
+                </div>
+            </section>
+
+            <section class="admin-tab-panel" id="adminTab-products">
+                <div class="admin-card">
+                    <h3>Category Manager</h3>
+                    <div class="admin-toolbar">
+                        <input id="adminCategoryName" type="text" placeholder="New category name">
+                        <button class="admin-secondary-btn" type="button" id="adminAddCategoryBtn">Add Category</button>
+                    </div>
+                    <div id="adminCategoryList"></div>
+                </div>
+
+                <div class="admin-card">
+                    <h3 id="adminProductFormTitle">Add Product</h3>
+                    <form id="adminProductForm">
+                        <input type="hidden" id="adminProductId">
+                        <div class="admin-form-accordion" id="adminProductFormAccordion">
+                            <section class="admin-form-section is-open" data-admin-form-section="basic">
+                                <button type="button" class="admin-form-section-toggle" data-admin-form-section-toggle="basic" aria-expanded="true" aria-controls="adminFormSection-basic">
+                                    <span>Basic</span>
+                                    <small>Name, category, brand, description</small>
+                                </button>
+                                <div class="admin-form-section-body" id="adminFormSection-basic">
+                                    <div class="admin-form-grid">
+                                        <div class="admin-form-group">
+                                            <label for="adminName">Name</label>
+                                            <input id="adminName" type="text" required>
+                                        </div>
+                                        <div class="admin-form-group">
+                                            <label for="adminCategory">Category</label>
+                                            <select id="adminCategory" required></select>
+                                        </div>
+                                        <div class="admin-form-group">
+                                            <label for="adminBrand">Brand</label>
+                                            <input id="adminBrand" type="text" required>
+                                        </div>
+                                        <div class="admin-form-group">
+                                            <label for="adminCondition">Condition</label>
+                                            <select id="adminCondition">
+                                                <option value="new">New</option>
+                                                <option value="used">Used</option>
+                                                <option value="refurbished">Refurbished</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="admin-form-group">
+                                        <label for="adminDescription">Description</label>
+                                        <textarea id="adminDescription" rows="3" required></textarea>
+                                    </div>
+                                    <div class="admin-form-group">
+                                        <label for="adminFeatures">Features (comma separated)</label>
+                                        <input id="adminFeatures" type="text" placeholder="Feature one, Feature two">
+                                    </div>
+                                </div>
+                            </section>
+
+                            <section class="admin-form-section" data-admin-form-section="pricing">
+                                <button type="button" class="admin-form-section-toggle" data-admin-form-section-toggle="pricing" aria-expanded="false" aria-controls="adminFormSection-pricing">
+                                    <span>Pricing</span>
+                                    <small>Price, stock, badges, sales metrics</small>
+                                </button>
+                                <div class="admin-form-section-body" id="adminFormSection-pricing">
+                                    <div class="admin-form-grid">
+                                        <div class="admin-form-group">
+                                            <label for="adminPrice">Price</label>
+                                            <input id="adminPrice" type="number" min="0" step="0.01" required>
+                                        </div>
+                                        <div class="admin-form-group">
+                                            <label for="adminOriginalPrice">Original Price</label>
+                                            <input id="adminOriginalPrice" type="number" min="0" step="0.01" required>
+                                        </div>
+                                        <div class="admin-form-group">
+                                            <label for="adminStock">Stock</label>
+                                            <input id="adminStock" type="number" min="0" step="1" required>
+                                        </div>
+                                        <div class="admin-form-group">
+                                            <label for="adminShipping">Shipping</label>
+                                            <select id="adminShipping">
+                                                <option value="free">Free</option>
+                                                <option value="fast">Fast</option>
+                                                <option value="standard">Standard</option>
+                                            </select>
+                                        </div>
+                                        <div class="admin-form-group">
+                                            <label for="adminBadge">Badge</label>
+                                            <select id="adminBadge">
+                                                <option value="">None</option>
+                                                <option value="new">New</option>
+                                                <option value="sale">Sale</option>
+                                            </select>
+                                        </div>
+                                        <div class="admin-form-group">
+                                            <label for="adminDailyDeal">Daily Deal</label>
+                                            <input id="adminDailyDeal" type="checkbox">
+                                        </div>
+                                        <div class="admin-form-group">
+                                            <label for="adminRating">Rating</label>
+                                            <input id="adminRating" type="number" min="0" max="5" step="0.1" value="4.5">
+                                        </div>
+                                        <div class="admin-form-group">
+                                            <label for="adminReviews">Reviews</label>
+                                            <input id="adminReviews" type="number" min="0" step="1" value="0">
+                                        </div>
+                                        <div class="admin-form-group">
+                                            <label for="adminSold">Sold</label>
+                                            <input id="adminSold" type="number" min="0" step="1" value="0">
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+
+                            <section class="admin-form-section" data-admin-form-section="media">
+                                <button type="button" class="admin-form-section-toggle" data-admin-form-section-toggle="media" aria-expanded="false" aria-controls="adminFormSection-media">
+                                    <span>Media</span>
+                                    <small>Images, video, and 3D model assets</small>
+                                </button>
+                                <div class="admin-form-section-body" id="adminFormSection-media">
+                                    <div class="admin-form-group admin-hidden-fields">
+                                        <label for="adminMainImages">Main Images (Color:url;Color:url)</label>
+                                        <textarea id="adminMainImages" rows="3" placeholder="Black:https://...;White:https://..."></textarea>
+                                    </div>
+                                    <div class="admin-form-group admin-hidden-fields">
+                                        <label for="adminAngleImages">Angle Images (Color:url|url|url;Color:url|url)</label>
+                                        <textarea id="adminAngleImages" rows="3" placeholder="Black:https://...|https://...;White:https://...|https://..."></textarea>
+                                    </div>
+                                    <div class="admin-form-group">
+                                        <label>Image Lines Builder (Easier)</label>
+                                        <div class="admin-image-lines-toolbar">
+                                            <button type="button" class="admin-secondary-btn" id="adminAddMainImageLineBtn">Add Main Line</button>
+                                            <button type="button" class="admin-secondary-btn" id="adminAddAngleImageLineBtn">Add Angle Line</button>
+                                        </div>
+                                        <div id="adminImageLines"></div>
+                                        <small style="color:#667;">Each line supports one image URL and shows a live thumbnail preview.</small>
+                                    </div>
+                                    <div class="admin-form-group">
+                                        <label for="adminVideoUrl">Product Video URL</label>
+                                        <input id="adminVideoUrl" type="text" placeholder="https://www.youtube.com/watch?v=...">
+                                    </div>
+                                    <div class="admin-form-group">
+                                        <label for="adminVideoFile">Upload Product Video</label>
+                                        <input id="adminVideoFile" type="file" accept="video/mp4,video/webm,video/ogg">
+                                        <small id="adminVideoUploadStatus" class="admin-upload-status">No video file uploaded.</small>
+                                    </div>
+                                    <div class="admin-form-group">
+                                        <label for="adminVideoThumb">Video Thumbnail URL</label>
+                                        <input id="adminVideoThumb" type="text" placeholder="https://...">
+                                    </div>
+                                    <div class="admin-form-group">
+                                        <label>Video Actions</label>
+                                        <div class="admin-image-lines-toolbar">
+                                            <button type="button" class="admin-secondary-btn" id="adminClearVideoBtn">Clear Video</button>
+                                        </div>
+                                    </div>
+                                    <div class="admin-form-group">
+                                        <label for="adminModelUrl">3D Model URL (embed)</label>
+                                        <input id="adminModelUrl" type="text" placeholder="https://sketchfab.com/models/.../embed">
+                                    </div>
+                                    <div class="admin-form-group">
+                                        <label for="adminModelFile">Upload 3D Model (.glb)</label>
+                                        <input id="adminModelFile" type="file" accept=".glb,model/gltf-binary">
+                                        <small id="adminModelUploadStatus" class="admin-upload-status">No 3D model file uploaded.</small>
+                                    </div>
+                                    <div class="admin-form-group">
+                                        <label for="adminModelThumb">3D Thumbnail URL</label>
+                                        <input id="adminModelThumb" type="text" placeholder="https://...">
+                                    </div>
+                                    <div class="admin-form-group">
+                                        <label>3D Model Actions</label>
+                                        <div class="admin-image-lines-toolbar">
+                                            <button type="button" class="admin-secondary-btn" id="adminClearModelBtn">Clear 3D Model</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+
+                            <section class="admin-form-section" data-admin-form-section="options">
+                                <button type="button" class="admin-form-section-toggle" data-admin-form-section-toggle="options" aria-expanded="false" aria-controls="adminFormSection-options">
+                                    <span>Options</span>
+                                    <small>Variants, swatches, and option strings</small>
+                                </button>
+                                <div class="admin-form-section-body" id="adminFormSection-options">
+                                    <div class="admin-form-group">
+                                        <label for="adminSpecialColorPicker">Color Picker Mode</label>
+                                        <select id="adminSpecialColorPicker">
+                                            <option value="regular">Regular Colors</option>
+                                            <option value="special">Special Color Picker</option>
+                                        </select>
+                                    </div>
+                                    <div class="admin-form-group">
+                                        <label for="adminColorMap">Color Swatches (Color:#hex;Color:#hex)</label>
+                                        <input id="adminColorMap" type="text" placeholder="Black:#111111;Ivory / Salmon:#f2c8bc">
+                                        <input id="adminColorStyleMap" type="hidden">
+                                    </div>
+                                    <div class="admin-form-group">
+                                        <label>Color Variants Editor</label>
+                                        <div class="admin-image-lines-toolbar">
+                                            <button type="button" class="admin-secondary-btn" id="adminAddColorLineBtn">Add Color</button>
+                                        </div>
+                                        <div id="adminColorLines"></div>
+                                        <small style="color:#667;">Set solid, split, or gradient swatches with up to 4 tones and orientation.</small>
+                                    </div>
+                                    <div class="admin-form-group admin-special-color-section">
+                                        <label>Special Color Picker Config</label>
+                                        <small style="color:#667;">Used when Color Picker Mode is set to Special Color Picker. Add one line per color style.</small>
+                                        <div class="admin-image-lines-toolbar">
+                                            <button type="button" class="admin-secondary-btn" id="adminAddSpecialSwatchBtn">Add Special Swatch</button>
+                                        </div>
+                                        <div id="adminSpecialColorLines"></div>
+                                        <textarea id="adminSpecialColorSwatches" rows="2" style="display:none;" aria-hidden="true" tabindex="-1"></textarea>
+                                    </div>
+                                    <div class="admin-form-group">
+                                        <label>Color Picker Helper</label>
+                                        <div class="admin-color-helper">
+                                            <input id="adminSwatchName" type="text" placeholder="Color name">
+                                            <input id="adminSwatchPicker" type="color" value="#ffffff">
+                                            <button type="button" class="admin-secondary-btn" id="adminAddSwatchBtn">Add</button>
+                                        </div>
+                                    </div>
+                                    <div class="admin-form-group">
+                                        <label for="adminOptions">Options (Name:Val|Val;Name:Val|Val)</label>
+                                        <input id="adminOptions" type="text" placeholder="Color:Black|White;Size:S|M|L">
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+
+                        <div class="admin-form-actions admin-form-sticky-actions">
+                            <div class="admin-form-sticky-hint" id="adminFormModeHint">Editing tools stay visible while you scroll.</div>
+                            <div class="admin-form-sticky-buttons">
+                                <button type="submit" class="admin-primary-btn" id="adminSaveProductBtn">Save</button>
+                                <button type="button" class="admin-secondary-btn" id="adminSaveAndNewBtn">Save &amp; New</button>
+                                <button type="button" class="admin-secondary-btn" id="adminResetProductFormBtn">Cancel</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="admin-card">
+                    <div class="admin-toolbar">
+                        <input id="adminProductSearch" type="text" placeholder="Search products...">
+                        <select id="adminProductCategoryFilter" aria-label="Filter products by category">
+                            <option value="all">All categories</option>
+                        </select>
+                        <select id="adminTableDensity" aria-label="Admin table density">
+                            <option value="comfortable">Comfortable</option>
+                            <option value="compact">Compact</option>
+                            <option value="ultra">Ultra</option>
+                        </select>
+                    </div>
+                    <div class="admin-toolbar admin-bulk-toolbar">
+                        <label class="admin-bulk-select-all">
+                            <input id="adminSelectAllProducts" type="checkbox">
+                            <span>Select visible</span>
+                        </label>
+                        <span class="admin-bulk-selected-count" id="adminSelectedCount">0 selected</span>
+                        <select id="adminBulkCategory" aria-label="Bulk set category">
+                            <option value="">Set category...</option>
+                        </select>
+                        <button type="button" class="admin-secondary-btn" id="adminBulkApplyCategoryBtn">Apply Category</button>
+                        <input id="adminBulkStockDelta" type="number" step="1" placeholder="Stock delta">
+                        <button type="button" class="admin-secondary-btn" id="adminBulkAdjustStockBtn">Adjust Stock</button>
+                        <button type="button" class="admin-secondary-btn admin-danger-btn" id="adminBulkDeleteBtn">Delete Selected</button>
+                    </div>
+                    <div class="admin-products-pagination">
+                        <button type="button" class="admin-secondary-btn" id="adminProductsPrevPageBtn">Prev</button>
+                        <span id="adminProductsPageInfo">Page 1 of 1</span>
+                        <button type="button" class="admin-secondary-btn" id="adminProductsNextPageBtn">Next</button>
+                        <label for="adminProductsPageSize">Rows</label>
+                        <select id="adminProductsPageSize" aria-label="Admin products rows per page">
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
+                    </div>
+                    <div class="admin-table-wrap">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th class="admin-select-col">Select</th>
+                                    <th><button type="button" class="admin-sort-btn" data-admin-sort-key="name" aria-label="Sort by product">Product</button></th>
+                                    <th><button type="button" class="admin-sort-btn" data-admin-sort-key="category" aria-label="Sort by category">Category</button></th>
+                                    <th><button type="button" class="admin-sort-btn" data-admin-sort-key="price" aria-label="Sort by price">Price</button></th>
+                                    <th><button type="button" class="admin-sort-btn" data-admin-sort-key="stock" aria-label="Sort by stock">Stock</button></th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminProductsBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section class="admin-tab-panel" id="adminTab-orders">
+                <div class="admin-card">
+                    <div class="admin-toolbar">
+                        <button class="admin-secondary-btn" id="clearOrdersBtn">Clear Orders</button>
+                    </div>
+                    <div class="admin-table-wrap">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Date</th>
+                                    <th>Items</th>
+                                    <th>Total</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminOrdersBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </aside>
+
+    <!-- Footer -->
+    <footer class="site-footer" id="siteFooter">
+        <button type="button" class="footer-back-to-top" id="footerBackToTop">Back to top</button>
+
+        <div class="footer-main">
+            <div class="footer-grid">
+                <section class="footer-column">
+                    <button type="button" class="footer-column-toggle" aria-expanded="false">Shop</button>
+                    <div class="footer-column-links" id="footerCategoryLinks"></div>
+                </section>
+
+                <section class="footer-column">
+                    <button type="button" class="footer-column-toggle" aria-expanded="false">Customer Service</button>
+                    <div class="footer-column-links">
+                        <a href="#" class="footer-help-link" data-help-topic="help">Help Center</a>
+                        <a href="#" class="footer-help-link" data-help-topic="order">Order Status</a>
+                        <a href="#" class="footer-help-link" data-help-topic="shipping">Shipping & Delivery</a>
+                        <a href="#" class="footer-help-link" data-help-topic="returns">Returns & Refunds</a>
+                        <a href="#" class="footer-help-link" data-help-topic="payments">Payments</a>
+                        <a href="#" class="footer-help-link" data-help-topic="report">Report an Issue</a>
+                    </div>
+                </section>
+
+                <section class="footer-column">
+                    <button type="button" class="footer-column-toggle" aria-expanded="false">My Account</button>
+                    <div class="footer-column-links">
+                        <a href="#">Sign In</a>
+                        <a href="#" id="footerMyCartLink">My Cart</a>
+                        <a href="#" id="footerWatchlistLink">Watchlist</a>
+                        <a href="#">Purchase History</a>
+                        <a href="#">Saved Searches</a>
+                        <a href="#">Recently Viewed</a>
+                    </div>
+                </section>
+
+                <section class="footer-column">
+                    <button type="button" class="footer-column-toggle" aria-expanded="false">Sell on IG</button>
+                    <div class="footer-column-links">
+                        <a href="#" class="footer-seller-admin-link">Seller Dashboard</a>
+                        <a href="#" class="footer-seller-admin-link">Add New Product</a>
+                        <a href="#" class="footer-seller-admin-link">Manage Inventory</a>
+                        <a href="#" class="footer-seller-admin-link">Order Management</a>
+                        <a href="#">Seller Policies</a>
+                        <a href="#">Seller Fees</a>
+                    </div>
+                </section>
+            </div>
+
+            <div class="footer-tools">
+                <form class="footer-tool-card" id="footerTrackForm">
+                    <h4>Track Your Order</h4>
+                    <p>Enter your order ID (example: ORD-1739999999999).</p>
+                    <div class="footer-inline-form">
+                        <input type="text" id="footerOrderId" placeholder="Order ID">
+                        <button type="submit">Track</button>
+                    </div>
+                </form>
+
+                <form class="footer-tool-card" id="footerNewsletterForm">
+                    <h4>Deals Newsletter</h4>
+                    <p>Get price drops, daily deals, and exclusive launches.</p>
+                    <div class="footer-inline-form">
+                        <input type="email" id="footerNewsletterEmail" placeholder="Email address">
+                        <button type="submit">Subscribe</button>
+                    </div>
+                </form>
+
+                <div class="footer-tool-card">
+                    <h4>Preferences</h4>
+                    <p>Set your shopping language, currency, and country.</p>
+                    <div class="footer-preferences">
+                        <select id="footerLanguage">
+                            <option value="en-US">English (US)</option>
+                            <option value="es-US">Espanol (US)</option>
+                            <option value="fr-US">Francais (US)</option>
+                        </select>
+                        <select id="footerCurrency">
+                            <option value="USD">USD ($)</option>
+                            <option value="EUR">EUR (Euro)</option>
+                            <option value="GBP">GBP (Pound)</option>
+                        </select>
+                        <select id="footerCountry">
+                            <option value="US">United States</option>
+                            <option value="CA">Canada</option>
+                            <option value="MX">Mexico</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-trust">
+                <div class="footer-payment">
+                    <span class="footer-chip">Visa</span>
+                    <span class="footer-chip">Mastercard</span>
+                    <span class="footer-chip">AmEx</span>
+                    <span class="footer-chip">PayPal</span>
+                    <span class="footer-chip">Apple Pay</span>
+                    <span class="footer-chip">Google Pay</span>
+                </div>
+                <div class="footer-security">
+                    <span>Buyer Protection</span>
+                    <span>Secure Checkout</span>
+                    <span>Encrypted Payments</span>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <div class="footer-legal-links">
+                    <a href="#">Privacy</a>
+                    <a href="#">Terms</a>
+                    <a href="#">Cookie Policy</a>
+                    <a href="#">Accessibility</a>
+                    <a href="#">Do Not Sell My Info</a>
+                </div>
+                <p>&copy; <span id="footerYear"></span> IG Marketplace. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <span class="toast-icon">&#10003;</span>
+        <span id="toastMessage">Added to cart</span>
+        <button type="button" id="toastUndoBtn" class="toast-undo-btn">Undo</button>
+    </div>
+
+    <script src="cloud-config.js?v=20260308-1"></script>
+    <script src="search-filter-logic.js?v=20260227-1"></script>
+    <script src="auth-account-logic.js?v=20260227-1"></script>
+    <script src="cart-checkout-logic.js?v=20260227-1"></script>
+    <script src="footer-logic.js?v=20260227-1"></script>
+    <script src="admin-logic.js?v=20260227-1"></script>
+    <script src="catalog-render-logic.js?v=20260227-1"></script>
+    <script src="search-ui-events.js?v=20260227-1"></script>
+    <script src="nav-account-events.js?v=20260227-1"></script>
+    <script src="auth-overlay-events.js?v=20260227-1"></script>
+    <script src="modal-ui-events.js?v=20260227-1"></script>
+    <script src="admin-panel-events.js?v=20260227-1"></script>
+    <script src="app-keyboard-events.js?v=20260227-1"></script>
+    <script src="filter-ui-events.js?v=20260227-1"></script>
+    <script src="primary-actions-events.js?v=20260227-1"></script>
+    <script src="cart-admin-controls-events.js?v=20260227-1"></script>
+    <script src="product-list-events.js?v=20260227-1"></script>
+    <script src="admin-dynamic-events.js?v=20260227-1"></script>
+    <script src="inline-replacement-events.js?v=20260227-1"></script>
+    <script src="script.js?v=20260223-97"></script>
+</body>
+</html>

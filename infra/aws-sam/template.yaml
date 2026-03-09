@@ -1,0 +1,135 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: IG marketplace backend infrastructure (AWS)
+
+Parameters:
+  StageName:
+    Type: String
+    Default: prod
+    Description: Deployment stage name appended to the API URL
+  CorsOrigin:
+    Type: String
+    Default: "*"
+    Description: Allowed CORS origin for browser clients
+
+Globals:
+  Function:
+    Runtime: nodejs20.x
+    Timeout: 10
+    MemorySize: 256
+
+Resources:
+  IgAppStateTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: pk
+          AttributeType: S
+      KeySchema:
+        - AttributeName: pk
+          KeyType: HASH
+      SSESpecification:
+        SSEEnabled: true
+
+  IgStateHttpApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      StageName: !Ref StageName
+      CorsConfiguration:
+        AllowOrigins:
+          - !Ref CorsOrigin
+        AllowMethods:
+          - GET
+          - PUT
+          - POST
+          - OPTIONS
+        AllowHeaders:
+          - Content-Type
+          - X-Api-Key
+          - Authorization
+          - X-Ig-User-Id
+
+  IgStateFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../../backend/aws-state-api/
+      Handler: index.handler
+      Environment:
+        Variables:
+          STATE_TABLE_NAME: !Ref IgAppStateTable
+          GLOBAL_STATE_PARTITION_KEY: state#global
+          USER_STATE_PARTITION_PREFIX: state#user#
+          CORS_ORIGIN: !Ref CorsOrigin
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref IgAppStateTable
+      Events:
+        HealthGet:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref IgStateHttpApi
+            Path: /health
+            Method: GET
+        StateGet:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref IgStateHttpApi
+            Path: /state
+            Method: GET
+        StatePut:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref IgStateHttpApi
+            Path: /state
+            Method: PUT
+        StatePost:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref IgStateHttpApi
+            Path: /state
+            Method: POST
+        StateGlobalGet:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref IgStateHttpApi
+            Path: /state/global
+            Method: GET
+        StateGlobalPut:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref IgStateHttpApi
+            Path: /state/global
+            Method: PUT
+        StateGlobalPost:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref IgStateHttpApi
+            Path: /state/global
+            Method: POST
+        StateUserGet:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref IgStateHttpApi
+            Path: /state/user
+            Method: GET
+        StateUserPut:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref IgStateHttpApi
+            Path: /state/user
+            Method: PUT
+        StateUserPost:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref IgStateHttpApi
+            Path: /state/user
+            Method: POST
+
+Outputs:
+  ApiBaseUrl:
+    Description: Base URL to place into cloud-config.js apiBaseUrl
+    Value: !Sub "https://${IgStateHttpApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${StageName}"
+  AppStateTableName:
+    Description: DynamoDB table that stores serialized app state
+    Value: !Ref IgAppStateTable

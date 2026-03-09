@@ -1,0 +1,14 @@
+{
+    "name": "ig-aws-state-api",
+    "version": "1.0.0",
+    "private": true,
+    "description": "Serverless state API for IG marketplace frontend",
+    "main": "index.js",
+    "scripts": {
+        "lint": "node --check index.js"
+    },
+    "dependencies": {
+        "@aws-sdk/client-dynamodb": "^3.670.0",
+        "@aws-sdk/lib-dynamodb": "^3.670.0"
+    }
+}
