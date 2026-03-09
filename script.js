@@ -4863,6 +4863,35 @@ function getProductImagePool(product) {
     return pool;
 }
 
+function getProductMainImagesForColor(product, color) {
+    if (!product) return [];
+    var resolvedColor = resolveColorKey(product, color);
+    var pool = getProductImagePool(product);
+    var mains = [];
+    var seen = new Set();
+    var add = function (url) {
+        if (!url || typeof url !== 'string') return;
+        if (!pool.includes(url) || seen.has(url)) return;
+        mains.push(url);
+        seen.add(url);
+    };
+
+    var specConfig = getSpecialColorSwatchConfig(product, resolvedColor || color);
+    if (specConfig && Array.isArray(specConfig.media)) {
+        specConfig.media.forEach(add);
+    }
+
+    if (resolvedColor && product.mainImagesByColor && Array.isArray(product.mainImagesByColor[resolvedColor])) {
+        product.mainImagesByColor[resolvedColor].forEach(add);
+    }
+
+    if (resolvedColor && product.images && product.images[resolvedColor]) {
+        add(product.images[resolvedColor]);
+    }
+
+    return mains;
+}
+
 function getProductMainImages(product) {
     if (!product) return [];
 
@@ -4876,32 +4905,33 @@ function getProductMainImages(product) {
         if (swatchKeys.length > 1) {
             // Multi-color Special: 1 image per swatch
             return swatchKeys.map(function (k) {
+                var mainList = getProductMainImagesForColor(product, k);
+                if (mainList.length > 0) return mainList[0];
                 var entry = swatches[k];
-                var img = entry.image || (Array.isArray(entry.media) ? entry.media[0] : '');
+                var img = entry && entry.image ? entry.image : '';
                 return (img && pool.includes(img)) ? img : '';
             }).filter(Boolean);
         } else if (swatchKeys.length === 1) {
-            // Single-color Special: Full gallery for rotation
-            var specMedia = getProductMediaForColor(product, swatchKeys[0]);
-            if (specMedia && specMedia.length > 0) return specMedia;
+            // Single-color Special: rotate through mains only (exclude angles).
+            var specialMains = getProductMainImagesForColor(product, swatchKeys[0]);
+            if (specialMains.length > 0) return specialMains;
         }
     }
 
-    var media = (product && product.mediaByColor) || null;
     var images = (product && product.images) || {};
     var allMain = [];
     var seenMain = new Set();
 
-    if (media) {
-        Object.keys(media).forEach(function (color) {
-            var colorMedia = media[color];
-            if (Array.isArray(colorMedia) && colorMedia.length > 0) {
-                var first = colorMedia[0];
-                if (first && !seenMain.has(first) && pool.includes(first)) {
-                    allMain.push(first);
-                    seenMain.add(first);
+    if (product.mainImagesByColor) {
+        Object.keys(product.mainImagesByColor).forEach(function (color) {
+            var mainList = product.mainImagesByColor[color];
+            if (!Array.isArray(mainList)) return;
+            mainList.forEach(function (url) {
+                if (url && !seenMain.has(url) && pool.includes(url)) {
+                    allMain.push(url);
+                    seenMain.add(url);
                 }
-            }
+            });
         });
     }
 
