@@ -1853,9 +1853,7 @@ function initHeroCarousel() {
                 startProductCardImageRotation();
             }, 610);
             if (document.getElementById('productModal').classList.contains('open')) {
-                modalCarouselTimer = setTimeout(function () {
-                    startModalCarouselAutoplay();
-                }, 620);
+                stopModalCarouselAutoplay();
             }
         }
     });
