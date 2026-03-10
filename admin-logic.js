@@ -12,6 +12,7 @@ var ADMIN_PRODUCT_FORM_SECTIONS = ['basic', 'pricing', 'media', 'options'];
 var adminActiveProductFormSection = 'basic';
 var adminVisibleProductIds = [];
 var adminSelectedProductIds = [];
+var adminRecentlyMovedProductId = null;
 
 function readAdminCompactModePreference() {
     try {
@@ -698,23 +699,28 @@ function renderAdminProducts() {
             String((product && product.brand) || '').toLowerCase().includes(query) ||
             productCategory.includes(query);
     });
-    var sorted = filtered.slice().sort(function (a, b) {
-        var directionMultiplier = adminProductsSort.direction === 'desc' ? -1 : 1;
-        var result = 0;
-        if (adminProductsSort.key === 'price') {
-            result = (Number(a && a.price) || 0) - (Number(b && b.price) || 0);
-        } else if (adminProductsSort.key === 'stock') {
-            result = (Number(a && a.stock) || 0) - (Number(b && b.stock) || 0);
-        } else if (adminProductsSort.key === 'category') {
-            result = String((a && a.category) || '').localeCompare(String((b && b.category) || ''), undefined, { sensitivity: 'base' });
-        } else {
-            result = String((a && a.name) || '').localeCompare(String((b && b.name) || ''), undefined, { sensitivity: 'base' });
-        }
-        if (result === 0) {
-            result = String((a && a.name) || '').localeCompare(String((b && b.name) || ''), undefined, { sensitivity: 'base' });
-        }
-        return result * directionMultiplier;
-    });
+    var sorted = filtered.slice();
+    if (adminProductsSort.key === 'manual') {
+        if (adminProductsSort.direction === 'desc') sorted.reverse();
+    } else {
+        sorted.sort(function (a, b) {
+            var directionMultiplier = adminProductsSort.direction === 'desc' ? -1 : 1;
+            var result = 0;
+            if (adminProductsSort.key === 'price') {
+                result = (Number(a && a.price) || 0) - (Number(b && b.price) || 0);
+            } else if (adminProductsSort.key === 'stock') {
+                result = (Number(a && a.stock) || 0) - (Number(b && b.stock) || 0);
+            } else if (adminProductsSort.key === 'category') {
+                result = String((a && a.category) || '').localeCompare(String((b && b.category) || ''), undefined, { sensitivity: 'base' });
+            } else {
+                result = String((a && a.name) || '').localeCompare(String((b && b.name) || ''), undefined, { sensitivity: 'base' });
+            }
+            if (result === 0) {
+                result = String((a && a.name) || '').localeCompare(String((b && b.name) || ''), undefined, { sensitivity: 'base' });
+            }
+            return result * directionMultiplier;
+        });
+    }
 
     var totalItems = sorted.length;
     var totalPages = Math.max(1, Math.ceil(totalItems / Math.max(1, adminProductsPageSize)));
@@ -740,7 +746,7 @@ function renderAdminProducts() {
     visible.forEach(function (product) {
         var firstImage = Object.values(product.images || {})[0] || 'https://via.placeholder.com/60?text=Img';
         var isSelected = adminSelectedProductIds.includes(Number(product.id));
-        html += '<tr>';
+        html += '<tr data-admin-product-row-id="' + product.id + '">';
         html += '<td class="admin-select-col"><input type="checkbox" class="admin-row-select" data-admin-select-product="1" data-product-id="' + product.id + '"' + (isSelected ? ' checked' : '') + '></td>';
         html += '<td><div class="admin-product-cell"><img class="admin-product-thumb" src="' + firstImage + '" alt="' + escapeHtml(product.name) + '"><span>' + escapeHtml(product.name) + '</span></div></td>';
         html += '<td>' + escapeHtml(product.category) + '</td>';
@@ -758,6 +764,32 @@ function renderAdminProducts() {
     });
     body.innerHTML = html;
     syncAdminProductBulkUi();
+    highlightMovedAdminProductRow();
+}
+
+function highlightMovedAdminProductRow() {
+    var movedId = Number(adminRecentlyMovedProductId);
+    adminRecentlyMovedProductId = null;
+    if (!isFinite(movedId)) return;
+
+    var selector = '#adminProductsBody tr[data-admin-product-row-id="' + movedId + '"]';
+    var row = document.querySelector(selector);
+    if (!row) return;
+
+    row.classList.remove('admin-row-moved');
+    // Restart animation if the same row is moved repeatedly.
+    void row.offsetWidth;
+    row.classList.add('admin-row-moved');
+
+    try {
+        row.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    } catch (err) {
+        row.scrollIntoView();
+    }
+
+    setTimeout(function () {
+        row.classList.remove('admin-row-moved');
+    }, 900);
 }
 
 function moveProductOrder(productId, direction) {
@@ -773,12 +805,14 @@ function moveProductOrder(productId, direction) {
     var temp = products[index];
     products[index] = products[nextIndex];
     products[nextIndex] = temp;
+    adminRecentlyMovedProductId = Number(productId);
+    adminProductsSort = { key: 'manual', direction: 'asc' };
+    applyAdminProductsSortUi();
 
     saveToStorage();
     applyFilters();
     renderProducts();
     renderAdminProducts();
-    showToast('Product order updated');
 }
 
 function editAdminProduct(productId) {
