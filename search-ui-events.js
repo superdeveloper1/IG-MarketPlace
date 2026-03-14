@@ -33,7 +33,7 @@
         searchInput.addEventListener('focus', function () {
             console.log('[search-input] focus event', this.value);
             // Block focus-triggered suggestions if recently hidden
-            if (typeof searchSuggestionsFocusBlockedUntil !== 'undefined' && Date.now() < searchSuggestionsFocusBlockedUntil) {
+            if (typeof window.searchSuggestionsFocusBlockedUntil !== 'undefined' && Date.now() < window.searchSuggestionsFocusBlockedUntil) {
                 console.log('[search-input] focus event blocked');
                 return;
             }
