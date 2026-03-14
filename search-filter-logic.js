@@ -144,10 +144,6 @@ function getSelectedSearchCategory() {
 
 function queueSearchSuggestions(rawQuery) {
     clearSearchSuggestionQueue();
-    // Only queue suggestions if search input is actually focused
-    var searchInput = document.getElementById('searchInput');
-    if (!searchInput || document.activeElement !== searchInput) return;
-    
     searchSuggestionTimer = setTimeout(function () {
         updateSearchSuggestions(rawQuery);
     }, SEARCH_SUGGESTION_DEBOUNCE_MS);
@@ -253,14 +249,20 @@ function hideSearchSuggestions() {
 }
 
 function useSearchSuggestion(text) {
-    document.getElementById('searchInput').value = text;
+    var searchInput = document.getElementById('searchInput');
+    if (searchInput) searchInput.value = text;
+    hideSearchSuggestions();
+    if (searchInput) searchInput.blur();
     performSearch();
 }
 
 function selectSuggestedProduct(productId) {
     var product = products.find(function (p) { return p.id === productId; });
     if (!product) return;
-    document.getElementById('searchInput').value = product.name;
+    var searchInput = document.getElementById('searchInput');
+    if (searchInput) searchInput.value = product.name;
+    hideSearchSuggestions();
+    if (searchInput) searchInput.blur();
     performSearch();
 }
 
