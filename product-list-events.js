@@ -29,6 +29,7 @@
             if (!card || !productsContainer.contains(card)) return;
             var productId = Number(card.getAttribute('data-product-id'));
             if (!isFinite(productId)) return;
+            global.hideSearchSuggestions();
             global.openProductModal(productId);
         });
 

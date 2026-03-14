@@ -30,12 +30,16 @@
         });
 
         searchInput.addEventListener('focus', function () {
-            global.queueSearchSuggestions(this.value);
+            // Only show suggestions if there's actual search text
+            if (this.value.trim()) {
+                global.queueSearchSuggestions(this.value);
+            }
         });
 
         searchInput.addEventListener('keydown', function (e) {
             if (e.key === 'Escape') {
                 global.hideSearchSuggestions();
+                this.blur();
             }
         });
 
