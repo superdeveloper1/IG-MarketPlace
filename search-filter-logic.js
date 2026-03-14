@@ -171,7 +171,10 @@ function highlightSearchMatch(text, query) {
 
 function updateSearchSuggestions(rawQuery) {
     // If suggestions are blocked, don't show them
-    if (Date.now() < searchSuggestionsBlockedUntil) return;
+    if (Date.now() < searchSuggestionsBlockedUntil) {
+        console.log('[search] Suggestions blocked from showing');
+        return;
+    }
     
     var query = (rawQuery || '').trim().toLowerCase();
     var container = document.getElementById('searchSuggestions');
@@ -230,8 +233,9 @@ function updateSearchSuggestions(rawQuery) {
     }
 
     container.innerHTML = html;
-    container.style.display = '';  
+    container.style.display = '';
     container.classList.add('open');
+    console.log('[search] Suggestions shown', {query, html});
 }
 
 function scrollToResultsSection() {
@@ -249,7 +253,7 @@ function hideSearchSuggestions() {
     container.classList.remove('open');
     container.innerHTML = '';
     container.style.display = 'none';
-    
+    console.log('[search] Suggestions hidden');
     // Block suggestions from showing for 400ms to prevent them from flickering back
     searchSuggestionsBlockedUntil = Date.now() + 400;
 }
