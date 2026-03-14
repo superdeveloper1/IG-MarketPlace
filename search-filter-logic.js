@@ -253,7 +253,8 @@ function hideSearchSuggestions() {
     container.classList.remove('open');
     container.innerHTML = '';
     container.style.display = 'none';
-    console.log('[search] Suggestions hidden');
+    container.style.visibility = 'hidden';
+    console.log('[search] Suggestions hidden (forced)');
     // Block suggestions from showing for 400ms to prevent them from flickering back
     searchSuggestionsBlockedUntil = Date.now() + 400;
     window.searchSuggestionsFocusBlockedUntil = Date.now() + 400;
@@ -262,6 +263,7 @@ function hideSearchSuggestions() {
 function useSearchSuggestion(text) {
     var searchInput = document.getElementById('searchInput');
     if (searchInput) searchInput.value = text;
+    window.searchSuggestionsFocusBlockedUntil = Date.now() + 400;
     hideSearchSuggestions();
     if (searchInput) searchInput.blur();
     performSearch();
@@ -272,6 +274,7 @@ function selectSuggestedProduct(productId) {
     if (!product) return;
     var searchInput = document.getElementById('searchInput');
     if (searchInput) searchInput.value = product.name;
+    window.searchSuggestionsFocusBlockedUntil = Date.now() + 400;
     hideSearchSuggestions();
     if (searchInput) searchInput.blur();
     performSearch();
