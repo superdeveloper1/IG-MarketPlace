@@ -90,7 +90,8 @@
 
         searchInput.dataset.adminSearchEventsBound = '1';
     }
-    global.bindAdminPanelEvents = bindAdminMediaInputEvents;
-})(window);
-
+    global.bindAdminPanelEvents = function() {
+        bindAdminMediaInputEvents();
         bindAdminProductSearchEvents();
+    };
+})(window);
