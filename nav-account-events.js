@@ -87,9 +87,29 @@
         }
     }
 
+    function bindLogoClick() {
+        var logo = document.querySelector('.logo');
+        if (logo && logo.dataset.logoBound !== '1') {
+            logo.addEventListener('click', function (e) {
+                e.preventDefault();
+                global.closeProductModal();
+                global.resetFilterInputs(false);
+                global.resetSearchControls();
+                global.currentFilters.category = 'all';
+                global.currentFilters.dailyDealsOnly = false;
+                global.updateDailyDealsUI();
+                global.renderCategoryUI();
+                global.applyFilters();
+                global.scrollToResultsSection();
+            });
+            logo.dataset.logoBound = '1';
+        }
+    }
+
     function bindNavAccountEvents() {
         bindAuthAndTopLinks();
         bindProductBreadcrumbLinks();
+        bindLogoClick();
     }
 
     global.bindNavAccountEvents = bindNavAccountEvents;

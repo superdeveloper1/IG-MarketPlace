@@ -64,6 +64,7 @@ function resetSearchControls() {
     if (searchInput) searchInput.value = '';
     var searchCategory = document.getElementById('searchCategory');
     if (searchCategory) searchCategory.value = 'all';
+    hideSearchSuggestions();
 }
 
 function clearFilters() {
