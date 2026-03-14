@@ -231,7 +231,9 @@ function updateSearchSuggestions(rawQuery) {
     }
 
     container.innerHTML = html;
-    container.style.display = '';  // Remove inline style to let CSS display it
+    container.style.display = '';  
+    container.style.visibility = '';
+    container.style.pointerEvents = '';
     container.classList.add('open');
 }
 
@@ -245,10 +247,13 @@ function hideSearchSuggestions() {
     clearSearchSuggestionQueue();
     var container = document.getElementById('searchSuggestions');
     if (!container) return;
+    
+    // Completely hide the container
     container.classList.remove('open');
     container.innerHTML = '';
-    // Force hide with inline style to prevent CSS from showing it
     container.style.display = 'none';
+    container.style.visibility = 'hidden';
+    container.style.pointerEvents = 'none';
 }
 
 function useSearchSuggestion(text) {

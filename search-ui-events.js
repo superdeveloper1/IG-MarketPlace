@@ -30,14 +30,16 @@
         });
 
         searchInput.addEventListener('focus', function () {
-            // Only show suggestions if there's actual search text
+            // Only show suggestions if there's actual search text AND no modal is open
+            var modal = document.querySelector('.modal.open, .product-modal.open');
+            if (modal) return;
             if (this.value.trim()) {
                 global.queueSearchSuggestions(this.value);
             }
         });
 
         searchInput.addEventListener('blur', function () {
-            // Clear suggestions on blur to prevent them from showing later
+            // Immediately hide suggestions when blurred
             global.hideSearchSuggestions();
         });
 
@@ -90,8 +92,15 @@
             // If click target or any parent is the search bar, don't hide
             if (searchBar.contains(e.target)) return;
             
-            // Otherwise, hide suggestions (click was outside search bar)
-            global.hideSearchSuggestions();
+            // Get the container and check if it's visible
+            var container = document.getElementById('searchSuggestions');
+            if (!container) return;
+            var isOpen = container.classList.contains('open') && container.style.display !== 'none';
+            
+            // If suggestions are open, hide them
+            if (isOpen) {
+                global.hideSearchSuggestions();
+            }
         }, true); // Use capture phase to catch clicks early
 
         if (document.body) document.body.dataset.searchOutsideBound = '1';
