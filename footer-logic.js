@@ -186,6 +186,7 @@ function applyCategoryFromFooter(category) {
     var categoryMap = getAllCategories();
     var value = categoryMap[category] ? category : 'all';
     currentFilters.category = value;
+    if (typeof hideSearchSuggestions === 'function') hideSearchSuggestions();
     renderCategoryUI();
     applyFilters();
     scrollToResultsSection();

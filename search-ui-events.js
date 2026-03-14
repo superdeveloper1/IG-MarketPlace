@@ -9,6 +9,7 @@
             var item = e.target.closest('.category-item');
             if (!item) return;
             global.currentFilters.category = item.dataset.category || 'all';
+            global.hideSearchSuggestions();
             global.renderCategoryUI();
             global.applyFilters();
             global.scrollToResultsSection();

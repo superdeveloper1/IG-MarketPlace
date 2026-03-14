@@ -1,6 +1,7 @@
 // Filtering and Search Logic
 function applyFilters(options) {
     currentPage = 1;
+    hideSearchSuggestions();
     var minPriceInput = document.getElementById('minPrice');
     var maxPriceInput = document.getElementById('maxPrice');
     var minPrice = parseInt(minPriceInput && minPriceInput.value, 10) || 0;
@@ -69,6 +70,7 @@ function resetSearchControls() {
 
 function clearFilters() {
     resetFilterInputs(false);
+    resetSearchControls();
     currentFilters.dailyDealsOnly = false;
     updateDailyDealsUI();
     applyFilters();

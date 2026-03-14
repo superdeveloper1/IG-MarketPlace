@@ -1787,6 +1787,8 @@ function showWishlistProducts() {
         return;
     }
 
+    if (typeof hideSearchSuggestions === 'function') hideSearchSuggestions();
+
     filteredProducts = products.filter(function (product) {
         return wishlist.includes(product.id);
     });
