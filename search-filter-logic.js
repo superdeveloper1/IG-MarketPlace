@@ -170,6 +170,9 @@ function highlightSearchMatch(text, query) {
 }
 
 function updateSearchSuggestions(rawQuery) {
+    // If suggestions are blocked, don't show them
+    if (Date.now() < searchSuggestionsBlockedUntil) return;
+    
     var query = (rawQuery || '').trim().toLowerCase();
     var container = document.getElementById('searchSuggestions');
     if (!container) return;
@@ -246,6 +249,9 @@ function hideSearchSuggestions() {
     container.classList.remove('open');
     container.innerHTML = '';
     container.style.display = 'none';
+    
+    // Block suggestions from showing for 400ms to prevent them from flickering back
+    searchSuggestionsBlockedUntil = Date.now() + 400;
 }
 
 function useSearchSuggestion(text) {
