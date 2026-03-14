@@ -232,8 +232,6 @@ function updateSearchSuggestions(rawQuery) {
 
     container.innerHTML = html;
     container.style.display = '';  
-    container.style.visibility = '';
-    container.style.pointerEvents = '';
     container.classList.add('open');
 }
 
@@ -248,12 +246,10 @@ function hideSearchSuggestions() {
     var container = document.getElementById('searchSuggestions');
     if (!container) return;
     
-    // Completely hide the container
+    // Hide the container completely
     container.classList.remove('open');
     container.innerHTML = '';
     container.style.display = 'none';
-    container.style.visibility = 'hidden';
-    container.style.pointerEvents = 'none';
 }
 
 function useSearchSuggestion(text) {
