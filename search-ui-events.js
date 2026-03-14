@@ -74,20 +74,16 @@
         if (document.body && document.body.dataset.searchOutsideBound === '1') return;
 
         document.addEventListener('click', function (e) {
+            // Get search bar and check if click is outside it
             var searchBar = document.querySelector('.search-bar');
-            var searchInput = document.getElementById('searchInput');
+            if (!searchBar) return;
             
-            // Hide suggestions when clicking outside search bar
-            if (searchBar && !searchBar.contains(e.target)) {
-                global.hideSearchSuggestions();
-            }
+            // If click target or any parent is the search bar, don't hide
+            if (searchBar.contains(e.target)) return;
             
-            // Also hide when clicking on interactive elements like products, buttons
-            var productCard = e.target.closest('.product-item, .product-card, button:not(.search-btn), a:not([id*="search"])');
-            if (productCard && searchBar && !searchBar.contains(productCard)) {
-                global.hideSearchSuggestions();
-            }
-        });
+            // Otherwise, hide suggestions (click was outside search bar)
+            global.hideSearchSuggestions();
+        }, true); // Use capture phase to catch clicks early
 
         if (document.body) document.body.dataset.searchOutsideBound = '1';
     }
