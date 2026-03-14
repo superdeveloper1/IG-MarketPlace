@@ -65,6 +65,9 @@
                 return;
             }
             if (action === 'view') {
+                global.hideSearchSuggestions();
+                var searchInput = document.getElementById('searchInput');
+                if (searchInput) searchInput.blur();
                 global.openProductModal(productId);
                 return;
             }
