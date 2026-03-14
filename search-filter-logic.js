@@ -234,6 +234,7 @@ function updateSearchSuggestions(rawQuery) {
 
     container.innerHTML = html;
     container.style.display = '';
+    container.style.visibility = '';
     container.classList.add('open');
     console.log('[search] Suggestions shown', {query, html});
 }
