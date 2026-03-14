@@ -30,6 +30,7 @@
             if (!card || !productsContainer.contains(card)) return;
             var productId = Number(card.getAttribute('data-product-id'));
             if (!isFinite(productId)) return;
+            e.stopPropagation();
             // Hide suggestions and blur search before opening modal
             global.hideSearchSuggestions();
             var searchInput = document.getElementById('searchInput');
@@ -64,6 +65,7 @@
             if (!relatedItem || !relatedItems.contains(relatedItem)) return;
             var productId = Number(relatedItem.getAttribute('data-related-product-id'));
             if (!isFinite(productId)) return;
+            e.stopPropagation();
             // Hide suggestions and blur search before opening modal
             global.hideSearchSuggestions();
             var searchInput = document.getElementById('searchInput');

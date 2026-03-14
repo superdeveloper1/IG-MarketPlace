@@ -65,6 +65,8 @@
                 return;
             }
             if (action === 'view') {
+                e.preventDefault();
+                e.stopPropagation();
                 global.hideSearchSuggestions();
                 var searchInput = document.getElementById('searchInput');
                 if (searchInput) searchInput.blur();
