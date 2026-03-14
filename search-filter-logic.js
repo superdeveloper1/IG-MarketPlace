@@ -144,6 +144,10 @@ function getSelectedSearchCategory() {
 
 function queueSearchSuggestions(rawQuery) {
     clearSearchSuggestionQueue();
+    // Only queue suggestions if search input is actually focused
+    var searchInput = document.getElementById('searchInput');
+    if (!searchInput || document.activeElement !== searchInput) return;
+    
     searchSuggestionTimer = setTimeout(function () {
         updateSearchSuggestions(rawQuery);
     }, SEARCH_SUGGESTION_DEBOUNCE_MS);
