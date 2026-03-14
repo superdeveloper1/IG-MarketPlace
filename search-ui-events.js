@@ -75,7 +75,16 @@
 
         document.addEventListener('click', function (e) {
             var searchBar = document.querySelector('.search-bar');
-            if (!searchBar || !searchBar.contains(e.target)) {
+            var searchInput = document.getElementById('searchInput');
+            
+            // Hide suggestions when clicking outside search bar
+            if (searchBar && !searchBar.contains(e.target)) {
+                global.hideSearchSuggestions();
+            }
+            
+            // Also hide when clicking on interactive elements like products, buttons
+            var productCard = e.target.closest('.product-item, .product-card, button:not(.search-btn), a:not([id*="search"])');
+            if (productCard && searchBar && !searchBar.contains(productCard)) {
                 global.hideSearchSuggestions();
             }
         });
