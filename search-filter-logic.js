@@ -210,7 +210,7 @@ function updateSearchSuggestions(rawQuery) {
     if (termMatches.length > 0) {
         html += '<div class="search-section-label">Suggestions</div>';
         termMatches.forEach(function (term) {
-            html += '<button type="button" class="search-suggestion-item" data-search-term="' + escapeHtml(encodeURIComponent(term)) + '">';
+            html += '<button type="button" class="admin-search-suggestion-item" data-search-term="' + escapeHtml(encodeURIComponent(term)) + '">';
             html += '<span class="search-suggestion-icon">></span>';
             html += '<span>' + highlightSearchMatch(term, query) + '</span>';
             html += '</button>';
@@ -221,12 +221,9 @@ function updateSearchSuggestions(rawQuery) {
         html += '<div class="search-section-label">Products</div>';
         productMatches.forEach(function (product) {
             var firstImage = Object.values(product.images)[0];
-            html += '<button type="button" class="search-suggestion-item" data-search-product-id="' + String(product.id) + '">';
-            html += '<img src="' + firstImage + '" class="search-product-thumb" alt="' + escapeHtml(product.name) + '">';
-            html += '<span class="search-product-meta">';
-            html += '<span class="search-product-name">' + highlightSearchMatch(product.name, query) + '</span>';
-            html += '<span class="search-product-info">$' + product.price + ' - ' + highlightSearchMatch(product.brand, query) + '</span>';
-            html += '</span>';
+            html += '<button type="button" class="admin-search-suggestion-item" data-search-product-id="' + String(product.id) + '">';
+            html += '<img src="' + firstImage + '" class="admin-search-product-thumb" alt="' + escapeHtml(product.name) + '">';
+            html += '<span class="admin-search-product-name">' + highlightSearchMatch(product.name, query) + '</span>';
             html += '</button>';
         });
     }
