@@ -47,8 +47,10 @@
 
         searchInput.addEventListener('blur', function () {
             console.log('[search-input] blur event', this.value);
-            // Immediately hide suggestions when blurred
-            global.hideSearchSuggestions();
+            // Delay hiding suggestions slightly to allow click events on suggestion items to fire
+            setTimeout(function () {
+                global.hideSearchSuggestions();
+            }, 200);
         });
 
         searchInput.addEventListener('keydown', function (e) {
