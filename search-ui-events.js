@@ -26,10 +26,12 @@
         });
 
         searchInput.addEventListener('input', function () {
+            console.log('[search-input] input event', this.value);
             global.queueSearchSuggestions(this.value);
         });
 
         searchInput.addEventListener('focus', function () {
+            console.log('[search-input] focus event', this.value);
             // Only show suggestions if there's actual search text
             if (this.value.trim()) {
                 global.queueSearchSuggestions(this.value);
@@ -37,11 +39,13 @@
         });
 
         searchInput.addEventListener('blur', function () {
+            console.log('[search-input] blur event', this.value);
             // Immediately hide suggestions when blurred
             global.hideSearchSuggestions();
         });
 
         searchInput.addEventListener('keydown', function (e) {
+            console.log('[search-input] keydown event', e.key);
             if (e.key === 'Escape') {
                 global.hideSearchSuggestions();
                 this.blur();
