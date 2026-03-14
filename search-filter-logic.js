@@ -231,6 +231,7 @@ function updateSearchSuggestions(rawQuery) {
     }
 
     container.innerHTML = html;
+    container.style.display = '';  // Remove inline style to let CSS display it
     container.classList.add('open');
 }
 
@@ -246,6 +247,8 @@ function hideSearchSuggestions() {
     if (!container) return;
     container.classList.remove('open');
     container.innerHTML = '';
+    // Force hide with inline style to prevent CSS from showing it
+    container.style.display = 'none';
 }
 
 function useSearchSuggestion(text) {

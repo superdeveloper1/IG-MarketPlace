@@ -36,6 +36,11 @@
             }
         });
 
+        searchInput.addEventListener('blur', function () {
+            // Clear suggestions on blur to prevent them from showing later
+            global.hideSearchSuggestions();
+        });
+
         searchInput.addEventListener('keydown', function (e) {
             if (e.key === 'Escape') {
                 global.hideSearchSuggestions();
