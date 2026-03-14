@@ -256,6 +256,7 @@ function hideSearchSuggestions() {
     console.log('[search] Suggestions hidden');
     // Block suggestions from showing for 400ms to prevent them from flickering back
     searchSuggestionsBlockedUntil = Date.now() + 400;
+    searchSuggestionsFocusBlockedUntil = Date.now() + 400;
 }
 
 function useSearchSuggestion(text) {

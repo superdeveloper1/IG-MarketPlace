@@ -613,6 +613,7 @@ var cloudIdentityRefreshInFlight = false;
 var cloudIdentityChangeRetryTimer = null;
 var searchSuggestionTimer = null;
 var searchSuggestionsBlockedUntil = 0;
+var searchSuggestionsFocusBlockedUntil = 0;
 var SEARCH_SUGGESTION_DEBOUNCE_MS = 180;
 var persistedBrowseUiState = null;
 var productCardRotateTimer = null;

@@ -32,6 +32,11 @@
 
         searchInput.addEventListener('focus', function () {
             console.log('[search-input] focus event', this.value);
+            // Block focus-triggered suggestions if recently hidden
+            if (typeof searchSuggestionsFocusBlockedUntil !== 'undefined' && Date.now() < searchSuggestionsFocusBlockedUntil) {
+                console.log('[search-input] focus event blocked');
+                return;
+            }
             // Only show suggestions if there's actual search text
             if (this.value.trim()) {
                 global.queueSearchSuggestions(this.value);
