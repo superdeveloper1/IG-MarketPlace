@@ -9,9 +9,16 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Manrope:wght@500;600;700&display=swap" rel="stylesheet">
     <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
-    <link rel="stylesheet" href="styles.css?v=20260223-2">
+    <link rel="stylesheet" href="styles.css?v=20260314-25">
 </head>
-<body>
+<body class="booting">
+    <script>
+        window.IG_V5_SESSION_ID = 'v5-' + Math.random().toString(36).substring(2, 9);
+        window.v5Log = function(msg) {
+            console.log('[V5-DEBUG] ' + msg);
+        };
+        v5Log('Session Started: ' + window.IG_V5_SESSION_ID);
+    </script>
     <!-- Header -->
     <header class="header">
         <div class="header-top">
@@ -40,9 +47,9 @@
                 <select class="search-select" id="searchCategory">
                     <option value="all">All Categories</option>
                 </select>
-                <input type="text" class="search-input" id="searchInput" placeholder="Search for anything">
+                <input type="text" class="search-input" id="ig-main-search-input-v4" placeholder="Search for anything" autocomplete="off chrome-off no">
                 <button class="search-btn" id="searchBtn">Search</button>
-                <div class="search-suggestions" id="searchSuggestions" role="listbox" aria-label="Search suggestions"></div>
+                <!-- V5 Dynamic Resurrection Target -->
             </div>
 
             <div class="header-actions">
@@ -732,10 +739,11 @@
 
                 <div class="admin-card">
                     <div class="admin-toolbar">
-                        <input id="adminProductSearch" type="text" placeholder="Search products...">
-                        <div class="admin-search-suggestions" id="adminSearchSuggestions" role="listbox" aria-label="Admin product suggestions" style="display:none;"></div>
+                        <input id="ig-admin-product-search-v4" type="text" placeholder="Search products..." autocomplete="off">
+                        <!-- V5 Dynamic Resurrection Target [Admin] -->
+
                         <select id="adminProductCategoryFilter" aria-label="Filter products by category">
-                            <option value="all">All categories</option>
+                        <option value="all">All categories</option>
                         </select>
                         <select id="adminTableDensity" aria-label="Admin table density">
                             <option value="comfortable">Comfortable</option>
@@ -938,25 +946,25 @@
         <button type="button" id="toastUndoBtn" class="toast-undo-btn">Undo</button>
     </div>
 
-    <script src="cloud-config.js?v=20260309-2"></script>
-    <script src="search-filter-logic.js?v=20260227-1"></script>
-    <script src="auth-account-logic.js?v=20260227-1"></script>
-    <script src="cart-checkout-logic.js?v=20260227-1"></script>
-    <script src="footer-logic.js?v=20260227-1"></script>
-    <script src="admin-logic.js?v=20260227-1"></script>
-    <script src="catalog-render-logic.js?v=20260227-1"></script>
-    <script src="search-ui-events.js?v=20260227-1"></script>
-    <script src="nav-account-events.js?v=20260227-1"></script>
-    <script src="auth-overlay-events.js?v=20260227-1"></script>
-    <script src="modal-ui-events.js?v=20260227-1"></script>
-    <script src="admin-panel-events.js?v=20260227-1"></script>
-    <script src="app-keyboard-events.js?v=20260227-1"></script>
-    <script src="filter-ui-events.js?v=20260227-1"></script>
-    <script src="primary-actions-events.js?v=20260227-1"></script>
-    <script src="cart-admin-controls-events.js?v=20260227-1"></script>
-    <script src="product-list-events.js?v=20260227-1"></script>
-    <script src="admin-dynamic-events.js?v=20260227-1"></script>
-    <script src="inline-replacement-events.js?v=20260227-1"></script>
-    <script src="script.js?v=20260309-2"></script>
+    <script src="cloud-config.js?v=20260314-25"></script>
+    <script src="search-filter-logic.js?v=20260314-36"></script>
+    <script src="auth-account-logic.js?v=20260314-25"></script>
+    <script src="cart-checkout-logic.js?v=20260314-25"></script>
+    <script src="footer-logic.js?v=20260314-25"></script>
+    <script src="admin-logic.js?v=20260314-25"></script>
+    <script src="catalog-render-logic.js?v=20260314-25"></script>
+    <script src="search-ui-events.js?v=20260314-36"></script>
+    <script src="nav-account-events.js?v=20260314-25"></script>
+    <script src="auth-overlay-events.js?v=20260314-25"></script>
+    <script src="modal-ui-events.js?v=20260314-25"></script>
+    <script src="admin-panel-events.js?v=20260314-25"></script>
+    <script src="app-keyboard-events.js?v=20260314-25"></script>
+    <script src="filter-ui-events.js?v=20260314-25"></script>
+    <script src="primary-actions-events.js?v=20260314-25"></script>
+    <script src="cart-admin-controls-events.js?v=20260314-25"></script>
+    <script src="product-list-events.js?v=20260314-25"></script>
+    <script src="admin-dynamic-events.js?v=20260314-25"></script>
+    <script src="inline-replacement-events.js?v=20260314-25"></script>
+    <script src="script.js?v=20260314-36"></script>
 </body>
 </html>

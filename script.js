@@ -1,5 +1,5 @@
-﻿// Product Database
-var products = [
+window.SEARCH_SUGGESTION_DEBOUNCE_MS = 250;
+window.products = [
     {
         id: 1,
         name: "On Cloudsurfer Max Running Shoes - Men's Premium Athletic Footwear",
@@ -547,9 +547,9 @@ products = (products || []).map(function (product) {
 var catalogSeedProducts = JSON.parse(JSON.stringify(products));
 
 // Global State
-var cart = [];
-var wishlist = [];
-var orders = [];
+window.cart = [];
+window.wishlist = [];
+window.orders = [];
 var users = [];
 var currentUser = null;
 var pendingAuthAction = '';
@@ -567,14 +567,14 @@ var modalCarouselTimer = null;
 var modalCarouselDelay = 3000;
 var selectedVariants = {};
 var quantity = 1;
-var currentPage = 1;
-var itemsPerPage = 8;
+window.currentPage = 1;
+window.itemsPerPage = 20;
 var searchTerms = [];
 var heroCarouselIndex = 0;
 var heroCarouselTimer = null;
 var heroCarouselDelay = 3000;
-var filteredProducts = [...products];
-var currentFilters = {
+window.filteredProducts = [...products];
+window.currentFilters = {
     category: 'all',
     dailyDealsOnly: false
 };
@@ -612,7 +612,7 @@ var cloudBootstrapCompleted = false;
 var cloudIdentityRefreshInFlight = false;
 var cloudIdentityChangeRetryTimer = null;
 var searchSuggestionTimer = null;
-var searchSuggestionsBlockedUntil = 0;
+window.GLOBAL_SEARCH_LOCKDOWN_UNTIL_V4 = window.GLOBAL_SEARCH_LOCKDOWN_UNTIL_V4 || (Date.now() + 50);
 window.searchSuggestionsFocusBlockedUntil = 0;
 var SEARCH_SUGGESTION_DEBOUNCE_MS = 180;
 var persistedBrowseUiState = null;
@@ -679,6 +679,11 @@ var modalThumbnailFallbackBound = false;
 
 // Initialize
 function init() {
+    v5Log('init: starting...');
+    // Silence suggestions immediately during early boot
+    if (typeof hideSearchSuggestions === 'function') {
+        hideSearchSuggestions(50);
+    }
     loadFromStorage();
     // Free duplicated legacy snapshot keys early so feature-specific saves have room.
     clearLegacyAppStateKeys();
@@ -699,19 +704,56 @@ function init() {
     renderCategoryUI();
     applyStoredBrowseUiState();
     buildSearchTerms();
-    // Default home load should always show full catalog (no sticky filters/search).
+    // Default home load should show full catalog unless URL parameters are present.
     resetFilterInputs(false);
     resetSearchControls();
-    currentFilters.category = 'all';
-    currentFilters.dailyDealsOnly = false;
-    updateDailyDealsUI();
-    renderCategoryUI();
-    applyFilters({ skipUrlSync: true });
-    persistBrowseUiState({ includeSearch: false });
-    clearBrowseQueryParamsFromUrl();
-    hideSearchSuggestions();
 
-    renderProducts();
+    var urlParams = new URLSearchParams(window.location.search);
+    var qParam = urlParams.get('q');
+    var catParam = urlParams.get('cat');
+
+    if (qParam || catParam) {
+        if (catParam) {
+            currentFilters.category = String(catParam).toLowerCase();
+            var searchSelect = document.getElementById('searchCategory');
+            if (searchSelect && Array.from(searchSelect.options).some(function (opt) { return opt.value === currentFilters.category; })) {
+                searchSelect.value = currentFilters.category;
+            } else {
+                currentFilters.category = 'all';
+            }
+        } else {
+            currentFilters.category = 'all';
+        }
+
+        if (qParam) {
+            var searchInput = document.querySelector('[id^="ig-q-v5-"]');
+            if (searchInput) searchInput.value = qParam;
+            v5Log('Applied qParam from URL: ' + qParam);
+        }
+
+        currentFilters.dailyDealsOnly = false;
+        updateDailyDealsUI();
+        renderCategoryUI();
+        if (qParam) {
+            performSearch();
+        } else {
+            applyFilters({ skipUrlSync: true });
+        }
+    } else {
+        currentFilters.category = 'all';
+        currentFilters.dailyDealsOnly = false;
+        updateDailyDealsUI();
+        renderCategoryUI();
+        applyFilters({ skipUrlSync: true });
+        persistBrowseUiState({ includeSearch: false });
+        clearBrowseQueryParamsFromUrl();
+    }
+
+
+
+    if (!(qParam || catParam)) {
+        renderProducts();
+    }
     setupEventListeners();
     setupFooterInteractions();
     initializeModalAccessibility();
@@ -723,6 +765,58 @@ function init() {
     resetAdminModelUploadState();
     renderAdminPanel();
     openProductFromUrlIfPresent();
+    // Release the physical "Nuclear" blocks after a significant delay (20s)
+    setTimeout(function() {
+        document.body.classList.remove('booting');
+        v5Log('Lockdown lifted. Attempting resurrection.');
+        
+        // DYNAMIC RESURRECTION V5: Physically create the elements with RANDOMIZED IDs
+        var searchBar = document.querySelector('.search-bar');
+        if (searchBar) {
+             var oldInput = document.getElementById('ig-main-search-input-v4');
+             if (oldInput) {
+                 oldInput.id = 'ig-q-' + window.IG_V5_SESSION_ID;
+                 oldInput.setAttribute('name', oldInput.id);
+                 v5Log('Main input randomized to: ' + oldInput.id);
+             }
+
+             if (!document.getElementById('ig-search-suggestions-container-v5')) {
+                var container = document.createElement('div');
+                container.id = 'ig-search-suggestions-container-v5';
+                container.className = 'ig-search-dropdown-v4';
+                container.setAttribute('role', 'listbox');
+                container.setAttribute('aria-label', 'Search suggestions');
+                searchBar.appendChild(container);
+                v5Log('Suggestions container resurrected.');
+            }
+        }
+
+        var adminToolbar = document.querySelector('.admin-toolbar');
+        if (adminToolbar) {
+            var oldAdminInput = document.getElementById('ig-admin-product-search-v4');
+            if (oldAdminInput) {
+                oldAdminInput.id = 'ig-admin-q-' + window.IG_V5_SESSION_ID;
+                v5Log('Admin input randomized to: ' + oldAdminInput.id);
+            }
+
+            if (!document.getElementById('ig-admin-search-suggestions-container-v5')) {
+                var adminContainer = document.createElement('div');
+                adminContainer.id = 'ig-admin-search-suggestions-container-v5';
+                adminContainer.className = 'admin-search-suggestions-v4';
+                adminContainer.setAttribute('role', 'listbox');
+                adminContainer.setAttribute('aria-label', 'Admin product suggestions');
+                var currentAdminInput = document.querySelector('[id^="ig-admin-q-v5-"]');
+                if (currentAdminInput && currentAdminInput.parentNode === adminToolbar) {
+                    adminToolbar.insertBefore(adminContainer, currentAdminInput.nextSibling);
+                    v5Log('Admin suggestions container resurrected.');
+                }
+            }
+        }
+        
+        // Re-bind events to the new IDs
+        if (typeof bindSearchAndCategoryEvents === 'function') bindSearchAndCategoryEvents();
+        if (typeof bindAdminPanelEvents === 'function') bindAdminPanelEvents();
+    }, 20);
 }
 
 function applyCatalogExpansionOnce() {
@@ -989,12 +1083,12 @@ function getCurrentBrowseUiState() {
     return sanitizeBrowseUiState({
         category: currentFilters.category,
         dailyDealsOnly: currentFilters.dailyDealsOnly,
-        priceValues: getCheckedValues('.filter-option input[type="checkbox"][id^="price"]:checked'),
-        conditionValues: getCheckedValues('.filter-option input[type="checkbox"][id^="condition"]:checked'),
-        brandValues: getCheckedValues('.filter-option input[type="checkbox"][id^="brand"]:checked'),
+        priceValues: getCheckedValues('.filter-option input[type="checkbox"][id^="price"]'),
+        conditionValues: getCheckedValues('.filter-option input[type="checkbox"][id^="condition"]'),
+        brandValues: getCheckedValues('.filter-option input[type="checkbox"][id^="brand"]'),
         minPrice: String((document.getElementById('minPrice') || {}).value || '').trim(),
         maxPrice: String((document.getElementById('maxPrice') || {}).value || '').trim(),
-        searchQuery: String((document.getElementById('searchInput') || {}).value || '').trim(),
+        searchQuery: String((document.querySelector('[id^="ig-q-v5-"]') || {}).value || '').trim(),
         searchCategory: getSelectedSearchCategory(),
         sortValue: getCurrentSortValue(),
         view: currentView
@@ -1045,7 +1139,7 @@ function applyBrowseUiState(rawState) {
     }
 
     if (Object.prototype.hasOwnProperty.call(state, 'searchQuery')) {
-        var searchInput = document.getElementById('searchInput');
+        var searchInput = document.querySelector('[id^="ig-q-v5-"]');
         if (searchInput) searchInput.value = state.searchQuery;
     }
     if (typeof state.searchCategory === 'string') {
@@ -1730,7 +1824,7 @@ function updateBrowseUrlState(options) {
     if (maxPrice) params.set('max', maxPrice);
 
     if (includeSearch) {
-        var query = String((document.getElementById('searchInput') || {}).value || '').trim();
+        var query = String((document.querySelector('[id^="ig-q-v5-"]') || {}).value || '').trim();
         var searchCategory = getSelectedSearchCategory();
         if (query) params.set('q', query);
         if (searchCategory && searchCategory !== 'all') params.set('sc', searchCategory);
@@ -1933,6 +2027,7 @@ function getCloudSyncBaseUrl() {
 }
 
 function isCloudSyncEnabled() {
+    if (window.location.protocol === 'file:') return false;
     var base = getCloudSyncBaseUrl();
     if (!base) return false;
     if (typeof fetch !== 'function') return false;
@@ -2616,6 +2711,7 @@ function renderCategoryUI() {
     renderAdminCategoryList(ordered, categoryMap);
     renderFooterCategories(ordered, categoryMap);
 }
+window.renderCategoryUI = renderCategoryUI;
 
 function renderHeaderCategories(ordered, categoryMap) {
     var container = document.getElementById('categoriesList');
@@ -4799,6 +4895,13 @@ function formatDate(isoDate) {
     return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 }
 
+function toTitleCase(str) {
+    if (!str) return '';
+    return str.split(' ').map(function(word) {
+        return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+    }).join(' ');
+}
+
 function escapeHtml(text) {
     return String(text)
         .replace(/&/g, '&amp;')
@@ -4810,7 +4913,8 @@ function escapeHtml(text) {
 
 // Sorting
 function sortProducts() {
-    var sortValue = document.getElementById('sortSelect').value;
+    var sortSelect = document.getElementById('sortSelect');
+    var sortValue = sortSelect ? sortSelect.value : 'best';
     if (sortValue === 'best') {
         persistBrowseUiState();
         renderProducts();
@@ -5225,6 +5329,13 @@ function openProductModal(id) {
 }
 
 function closeProductModal() {
+    if (typeof hideSearchSuggestions === 'function') {
+        hideSearchSuggestions(400, false, true);
+    }
+    var searchInput = document.querySelector('[id^="ig-q-v5-"], #ig-main-search-input-v4');
+    if (searchInput) {
+        searchInput.value = '';
+    }
     if (currentProduct) {
         var selectedColor = getCurrentSpecialColorValue(currentProduct);
         var mainImageNode = document.getElementById('mainImage');
@@ -7737,6 +7848,19 @@ function showStartupError(error) {
     }
 }
 
+function updateDailyDealsUI() {
+    var banner = document.getElementById('dailyDealsStatsBanner');
+    if (banner) {
+        banner.style.display = currentFilters.dailyDealsOnly ? 'block' : 'none';
+    }
+}
+
+function changePage(page) {
+    currentPage = page;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    renderProducts();
+}
+
 function bootApp() {
     try {
         init();
@@ -7748,3 +7872,45 @@ function bootApp() {
 
 // Initialize on load
 window.addEventListener('load', bootApp);
+
+// Final V5 Exposure (Local to script.js)
+window.openProductModal = openProductModal;
+window.closeProductModal = closeProductModal;
+window.toggleCart = toggleCart;
+window.toggleWishlist = toggleWishlist;
+window.quickAddToCart = quickAddToCart;
+window.changeQuantity = changeQuantity;
+window.addToCartFromModal = addToCartFromModal;
+window.buyNow = buyNow;
+window.renderCategoryUI = renderCategoryUI;
+window.moveHeroSlide = moveHeroSlide;
+window.setView = setView;
+window.sortProducts = sortProducts;
+window.changePage = changePage;
+window.toggleWishlistModal = toggleWishlistModal;
+window.shareCurrentProduct = shareCurrentProduct;
+window.openProductVideo = openProductVideo;
+window.openProductModel = openProductModel;
+window.closeProductVideo = closeProductVideo;
+window.closeProductModel = closeProductModel;
+window.handleModalThumbnailActivate = handleModalThumbnailActivate;
+window.handleSpecialColorPreviewPick = handleSpecialColorPreviewPick;
+window.toggleSpecialColorPickMode = toggleSpecialColorPickMode;
+window.resetSpecialColorSample = resetSpecialColorSample;
+window.updateSpecialColorSampleFromManual = updateSpecialColorSampleFromManual;
+window.selectVariant = selectVariant;
+window.openAdminPanel = openAdminPanel;
+window.currentFilters = currentFilters;
+window.wishlist = wishlist;
+window.updateDailyDealsUI = updateDailyDealsUI;
+window.updateBrowseUrlState = updateBrowseUrlState;
+window.cart = cart;
+window.toTitleCase = toTitleCase;
+window.escapeHtml = escapeHtml;
+window.getProductMainImages = getProductMainImages;
+window.getProductCardImageIndex = getProductCardImageIndex;
+window.stopProductCardImageRotation = stopProductCardImageRotation;
+window.startProductCardImageRotation = startProductCardImageRotation;
+window.escapeRegExp = function(text) {
+    return String(text || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+};
