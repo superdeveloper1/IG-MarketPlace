@@ -364,6 +364,9 @@ function useSearchSuggestion(text) {
     }
     global.SEARCH_CLEAR_ON_OUTSIDE_CLICK = true;
     performSearch();
+    if (typeof scrollToResultsSection === 'function') {
+        scrollToResultsSection();
+    }
 }
 
 function selectSuggestedProduct(productId) {
@@ -376,6 +379,9 @@ function selectSuggestedProduct(productId) {
     }
     global.SEARCH_CLEAR_ON_OUTSIDE_CLICK = true;
     performSearch();
+    if (typeof scrollToResultsSection === 'function') {
+        scrollToResultsSection();
+    }
 }
 
 function resetSearchExperience() {
