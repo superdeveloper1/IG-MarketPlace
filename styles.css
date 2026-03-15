@@ -1,4 +1,5 @@
-﻿        .admin-search-suggestions {
+        .admin-search-suggestions,
+        .admin-search-suggestions-v4 {
             position: absolute;
             left: 0;
             right: 0;
@@ -13,7 +14,8 @@
             display: none;
         }
 
-        .admin-search-suggestions.open {
+        .admin-search-suggestions.open,
+        .admin-search-suggestions-v4.open {
             display: block;
         }
 
@@ -195,7 +197,8 @@
             background: #254eda;
         }
 
-        .search-suggestions {
+        .search-suggestions,
+        .ig-search-dropdown-v4 {
             position: absolute;
             left: 0;
             right: 0;
@@ -210,7 +213,8 @@
             display: none;
         }
 
-        .search-suggestions.open {
+        .search-suggestions.open,
+        .ig-search-dropdown-v4.open {
             display: block;
         }
 
@@ -3600,3 +3604,4 @@
                 grid-template-columns: 1fr;
             }
         }
+
